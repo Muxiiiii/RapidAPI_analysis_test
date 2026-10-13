@@ -1,0 +1,70 @@
+skill,community,bridge_score,link_strength,course_area
+Cloud Computing,1,0.0868,321.0,Cloud & DevOps
+CI/CD,1,0.053,282.0,Cloud & DevOps
+Microsoft Azure,1,0.0683,250.0,Cloud & DevOps
+Amazon Web Services (AWS),1,0.0398,245.0,Cloud & DevOps
+DevOps,1,0.0536,243.0,Cloud & DevOps
+GitHub,1,0.012,157.0,Programming & Software Engineering
+Kubernetes,1,0.0132,130.0,Cloud & DevOps
+Docker,1,0.0106,120.0,Cloud & DevOps
+Jenkins,1,0.0034,77.0,Cloud & DevOps
+Terraform,1,0.0024,64.0,Cloud & DevOps
+Google Cloud Platform,1,0.0027,53.0,Cloud & DevOps
+Debugging,1,0.0017,49.0,Programming & Software Engineering
+GitLab,1,0.0002,46.0,Cloud & DevOps
+Orchestration,1,0.0016,42.0,Cloud & DevOps
+APIs,1,0.0006,36.0,Web Development
+Node.js,1,0.0016,34.0,Web Development
+REST APIs,1,0.001,33.0,Web Development
+Backend Development,1,0.0014,21.0,Web Development
+JSON,1,0.0,16.0,Web Development
+Power BI,1,0.002,14.0,Data Analytics & BI
+Tableau,1,0.0008,12.0,Data Analytics & BI
+DevSecOps,1,0.0,5.0,Cloud & DevOps
+JavaScript,2,0.0265,216.0,Web Development
+Java,2,0.027,182.0,Programming & Software Engineering
+SQL,2,0.0401,163.0,Databases & Data Engineering
+Git,2,0.0256,146.0,Programming & Software Engineering
+React,2,0.0113,146.0,Web Development
+UI/UX Design,2,0.0522,83.0,Product & UX
+TypeScript,2,0.0045,77.0,Web Development
+ASP.NET,2,0.0194,76.0,Web Development
+Programming,2,0.0026,72.0,Programming & Software Engineering
+HTML,2,0.0044,70.0,Web Development
+CSS,2,0.0029,59.0,Web Development
+Oracle Database,2,0.0034,59.0,Databases & Data Engineering
+Angular,2,0.0004,54.0,Web Development
+AngularJS,2,0.0004,54.0,Web Development
+Scrum,2,0.0013,53.0,Agile & Project Management
+Software Engineering,2,0.0009,50.0,Programming & Software Engineering
+Jira,2,0.0017,43.0,Agile & Project Management
+Unit Testing,2,0.001,27.0,Programming & Software Engineering
+Microsoft SQL Server,2,0.0003,23.0,Databases & Data Engineering
+.NET,2,0.0,12.0,Programming & Software Engineering
+Linux,3,0.0782,152.0,IT Support & Networking
+Python,3,0.0067,97.0,Programming & Software Engineering
+Computer Networking,3,0.0241,95.0,IT Support & Networking
+Bash,3,0.0072,67.0,IT Support & Networking
+Cybersecurity (general),3,0.0053,62.0,Cybersecurity
+Windows,3,0.0143,62.0,IT Support & Networking
+Unix,3,0.0054,52.0,IT Support & Networking
+PowerShell,3,0.014,47.0,IT Support & Networking
+Computer Hardware,3,0.0,38.0,IT Support & Networking
+TCP/IP,3,0.0,27.0,IT Support & Networking
+Ansible,3,0.0003,22.0,Cloud & DevOps
+Cisco Networking,3,0.0004,17.0,IT Support & Networking
+Microsoft 365,3,0.0,11.0,IT Support & Networking
+macOS,3,0.0,8.0,IT Support & Networking
+Microsoft Office,4,0.0013,14.0,Office Productivity
+AutoCAD,4,0.0,6.0,CAD & Engineering Design
+Apache Spark,4,0.0,4.0,Databases & Data Engineering
+SharePoint,4,0.0,4.0,Office Productivity
+Microsoft Excel,5,0.0,60.0,Data Analytics & BI
+Microsoft PowerPoint,5,0.0,44.0,Office Productivity
+Microsoft Word,5,0.0,30.0,Office Productivity
+Artificial Intelligence (AI),6,0.0246,20.0,AI & Machine Learning
+Machine Learning,6,0.0,16.0,AI & Machine Learning
+C++,7,0.0,0.0,Programming & Software Engineering
+Computer-Aided Design (CAD),8,0.0,0.0,CAD & Engineering Design
+Data Management,9,0.0,0.0,Databases & Data Engineering
+ITIL,10,0.0,0.0,IT Support & Networking

@@ -1,0 +1,127 @@
+{
+  "run_at": "2026-10-13T12:44:57+00:00",
+  "inputs": [
+    "combined_jobs_data.csv"
+  ],
+  "row_counts": {
+    "raw": 1110,
+    "after_exact_duplicates": 1089,
+    "after_repeat_scrapes": 1018,
+    "clean": 1018
+  },
+  "salary_units": {
+    "annual": 613,
+    "hourly": 389,
+    "unknown": 16
+  },
+  "posting_dates": {
+    "first": "2025-09-01",
+    "last": "2026-03-15",
+    "batches": {
+      "2025-09": 223,
+      "2025-12": 261,
+      "2026-02": 290,
+      "2026-03": 244
+    }
+  },
+  "checks": [
+    {
+      "name": "rows",
+      "value": 1018,
+      "limit": ">= 500",
+      "passed": true
+    },
+    {
+      "name": "unknown_salary_share",
+      "value": 0.0157,
+      "limit": "<= 0.05",
+      "passed": true
+    },
+    {
+      "name": "postings_with_curated_skill_share",
+      "value": 0.4961,
+      "limit": ">= 0.3",
+      "passed": true
+    },
+    {
+      "name": "duplicate_postings",
+      "value": 0,
+      "limit": "== 0",
+      "passed": true
+    },
+    {
+      "name": "missing_title_or_company",
+      "value": 0,
+      "limit": "== 0",
+      "passed": true
+    },
+    {
+      "name": "state_codes_valid",
+      "value": 0,
+      "limit": "== 0",
+      "passed": true
+    },
+    {
+      "name": "annual_salary_range",
+      "value": "18,720 to 273,680",
+      "limit": "10,000 to 1,000,000",
+      "passed": true
+    },
+    {
+      "name": "dates_parsed",
+      "value": 0,
+      "limit": "== 0",
+      "passed": true
+    }
+  ],
+  "top_course_areas": [
+    {
+      "area": "Programming & Software Engineering",
+      "score": 82.5,
+      "postings": 175,
+      "confidence": "High"
+    },
+    {
+      "area": "Data Analytics & BI",
+      "score": 78.7,
+      "postings": 146,
+      "confidence": "High"
+    },
+    {
+      "area": "Office Productivity",
+      "score": 78.1,
+      "postings": 180,
+      "confidence": "High"
+    },
+    {
+      "area": "Cloud & DevOps",
+      "score": 71.9,
+      "postings": 113,
+      "confidence": "Medium"
+    },
+    {
+      "area": "Databases & Data Engineering",
+      "score": 62.7,
+      "postings": 109,
+      "confidence": "High"
+    }
+  ],
+  "skill_models": {
+    "postings_with_2plus_skills": 305,
+    "skills_modelled": 69,
+    "rules": 496,
+    "communities": 6,
+    "modularity": 0.304,
+    "recommender_top5_hit_rate": 0.511,
+    "popularity_baseline_hit_rate": 0.354,
+    "recommender_test_postings": 305
+  },
+  "outputs": [
+    "jobs_clean.csv",
+    "outputs/course_area_scores.csv",
+    "outputs/skill_scores.csv",
+    "outputs/association_rules.csv",
+    "outputs/skill_communities.csv"
+  ],
+  "seconds": 0.4
+}

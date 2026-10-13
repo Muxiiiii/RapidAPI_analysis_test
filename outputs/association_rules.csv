@@ -1,0 +1,497 @@
+antecedent,consequent,size,postings,confidence,lift
+Microsoft Azure,Cloud Computing,1,29,1.0,4.485
+Amazon Web Services (AWS) + Microsoft Azure,Cloud Computing,2,21,1.0,4.485
+DevOps + Microsoft Azure,Cloud Computing,2,16,1.0,4.485
+Microsoft Azure + Python,Cloud Computing,2,14,1.0,4.485
+CI/CD + Microsoft Azure,Cloud Computing,2,14,1.0,4.485
+Microsoft Azure + SQL,Cloud Computing,2,12,1.0,4.485
+Microsoft Office + Microsoft PowerPoint,Microsoft Excel,2,12,1.0,3.245
+Amazon Web Services (AWS) + Java,Cloud Computing,2,11,1.0,4.485
+Git + React,JavaScript,2,11,1.0,8.714
+AngularJS,Angular,1,10,1.0,30.5
+Angular,AngularJS,1,10,1.0,30.5
+Angular,React,1,10,1.0,12.708
+AngularJS,React,1,10,1.0,12.708
+AngularJS + React,Angular,2,10,1.0,30.5
+Angular + React,AngularJS,2,10,1.0,30.5
+Angular + AngularJS,React,2,10,1.0,12.708
+Google Cloud Platform,Cloud Computing,1,10,1.0,4.485
+DevOps + Kubernetes,Cloud Computing,2,10,1.0,4.485
+Java + Microsoft Azure,Cloud Computing,2,9,1.0,4.485
+GitHub + Microsoft Azure,Cloud Computing,2,9,1.0,4.485
+JavaScript + Microsoft Azure,Cloud Computing,2,9,1.0,4.485
+AngularJS + JavaScript,Angular,2,9,1.0,30.5
+Angular + JavaScript,AngularJS,2,9,1.0,30.5
+Angular + JavaScript,React,2,9,1.0,12.708
+AngularJS + JavaScript,React,2,9,1.0,12.708
+Computer Hardware + Windows,Computer Networking,2,9,1.0,8.971
+Linux + Microsoft Azure,Cloud Computing,2,8,1.0,4.485
+Ansible,Python,1,8,1.0,3.861
+Computer Hardware + TCP/IP,Computer Networking,2,8,1.0,8.971
+Cisco Networking,Computer Networking,1,8,1.0,8.971
+Amazon Web Services (AWS) + DevOps,Cloud Computing,2,18,0.947,4.249
+Computer Hardware,Computer Networking,1,16,0.941,8.443
+Microsoft PowerPoint,Microsoft Excel,1,37,0.925,3.001
+Microsoft Word,Microsoft Excel,1,23,0.92,2.985
+Microsoft SQL Server,SQL,1,11,0.917,4.993
+CI/CD + Kubernetes,Cloud Computing,2,11,0.917,4.112
+TCP/IP,Computer Networking,1,10,0.909,8.155
+CI/CD + SQL,Cloud Computing,2,9,0.9,4.037
+Docker + Kubernetes,Cloud Computing,2,9,0.9,4.037
+React + TypeScript,JavaScript,2,9,0.9,7.843
+Angular,JavaScript,1,9,0.9,7.843
+AngularJS,JavaScript,1,9,0.9,7.843
+Angular + AngularJS,JavaScript,2,9,0.9,7.843
+Angular + React,JavaScript,2,9,0.9,7.843
+AngularJS + React,JavaScript,2,9,0.9,7.843
+Orchestration,Cloud Computing,1,9,0.9,4.037
+Machine Learning,Artificial Intelligence (AI),1,16,0.889,15.062
+Artificial Intelligence (AI),Machine Learning,1,16,0.889,15.062
+Bash,Cloud Computing,1,8,0.889,3.987
+Bash,Python,1,8,0.889,3.432
+Java + Microsoft Azure,Amazon Web Services (AWS),2,8,0.889,5.533
+DevOps + Docker,Cloud Computing,2,8,0.889,3.987
+CSS,HTML,1,8,0.889,16.944
+GitHub + Microsoft Azure,DevOps,2,8,0.889,5.533
+Amazon Web Services (AWS) + Software Engineering,Cloud Computing,2,8,0.889,3.987
+React + SQL,JavaScript,2,8,0.889,7.746
+CI/CD + Microsoft Azure,DevOps,2,12,0.857,5.335
+Amazon Web Services (AWS) + CI/CD,Cloud Computing,2,15,0.833,3.738
+Microsoft Azure + SQL,Amazon Web Services (AWS),2,10,0.833,5.187
+Terraform,Cloud Computing,1,9,0.818,3.67
+Terraform,Python,1,9,0.818,3.159
+DevOps + SQL,Cloud Computing,2,9,0.818,3.67
+CI/CD + Java,DevOps,2,9,0.818,5.093
+Git + SQL,JavaScript,2,9,0.818,7.13
+Amazon Web Services (AWS) + Kubernetes,Cloud Computing,2,9,0.818,3.67
+CI/CD + Docker,Cloud Computing,2,9,0.818,3.67
+Amazon Web Services (AWS) + SQL,Cloud Computing,2,13,0.812,3.644
+DevOps + Microsoft Azure,Amazon Web Services (AWS),2,13,0.812,5.057
+Kubernetes,Cloud Computing,1,16,0.8,3.588
+Docker,Cloud Computing,1,12,0.8,3.588
+Docker + Python,Cloud Computing,2,8,0.8,3.588
+Jenkins,CI/CD,1,8,0.8,6.595
+Amazon Web Services (AWS) + JavaScript,CI/CD,2,8,0.8,6.595
+Amazon Web Services (AWS) + JavaScript,Cloud Computing,2,8,0.8,3.588
+DevOps + Kubernetes,CI/CD,2,8,0.8,6.595
+Docker + Kubernetes,CI/CD,2,8,0.8,6.595
+Orchestration,CI/CD,1,8,0.8,6.595
+Computer Networking + TCP/IP,Computer Hardware,2,8,0.8,14.353
+Amazon Web Services (AWS),Cloud Computing,1,39,0.796,3.57
+Cloud Computing + Java,Amazon Web Services (AWS),2,11,0.786,4.891
+Microsoft Azure + Python,Amazon Web Services (AWS),2,11,0.786,4.891
+CI/CD + Microsoft Azure,Amazon Web Services (AWS),2,11,0.786,4.891
+DevOps + GitHub,CI/CD,2,11,0.786,6.477
+Kubernetes + Python,Cloud Computing,2,11,0.786,3.524
+Git + JavaScript,React,2,11,0.786,9.985
+React,JavaScript,1,18,0.75,6.536
+DevOps + Microsoft Azure,CI/CD,2,12,0.75,6.182
+TypeScript,JavaScript,1,12,0.75,6.536
+DevOps + Java,Cloud Computing,2,9,0.75,3.364
+DevOps + Java,CI/CD,2,9,0.75,6.182
+CI/CD + JavaScript,Cloud Computing,2,9,0.75,3.364
+Cloud Computing + Docker,CI/CD,2,9,0.75,6.182
+Cloud Computing + Docker,Kubernetes,2,9,0.75,11.438
+JavaScript + TypeScript,React,2,9,0.75,9.531
+CI/CD + Python,Cloud Computing,2,11,0.733,3.289
+Docker,CI/CD,1,11,0.733,6.045
+Amazon Web Services (AWS) + Java,DevOps,2,8,0.727,4.527
+Amazon Web Services (AWS) + Java,Microsoft Azure,2,8,0.727,7.649
+Amazon Web Services (AWS) + Java,Python,2,8,0.727,2.808
+CI/CD + Java,Cloud Computing,2,8,0.727,3.262
+GitHub + JavaScript,CI/CD,2,8,0.727,5.995
+GitHub + Python,CI/CD,2,8,0.727,5.995
+Git + SQL,Cloud Computing,2,8,0.727,3.262
+Cloud Computing + Git,SQL,2,8,0.727,3.961
+Java + JavaScript,Cloud Computing,2,8,0.727,3.262
+Cloud Computing + Linux,Microsoft Azure,2,8,0.727,7.649
+GitHub + Python,DevOps,2,8,0.727,4.527
+Java + JavaScript,Python,2,8,0.727,2.808
+Amazon Web Services (AWS) + Kubernetes,CI/CD,2,8,0.727,5.995
+Cloud Computing + Software Engineering,Amazon Web Services (AWS),2,8,0.727,4.527
+CI/CD + Docker,Kubernetes,2,8,0.727,11.091
+TCP/IP,Computer Hardware,1,8,0.727,13.048
+Microsoft Azure,Amazon Web Services (AWS),1,21,0.724,4.507
+Cloud Computing + Microsoft Azure,Amazon Web Services (AWS),2,21,0.724,4.507
+Cloud Computing + GitHub,CI/CD,2,10,0.714,5.888
+DevOps + GitHub,Cloud Computing,2,10,0.714,3.204
+Cloud Computing + GitHub,DevOps,2,10,0.714,4.446
+Amazon Web Services (AWS) + Python,Cloud Computing,2,17,0.708,3.177
+DevOps + Python,Cloud Computing,2,12,0.706,3.166
+Git,JavaScript,1,14,0.7,6.1
+Kubernetes,Python,1,14,0.7,2.703
+CI/CD + DevOps,Cloud Computing,2,16,0.696,3.12
+Cloud Computing + JavaScript,CI/CD,2,9,0.692,5.707
+Cloud Computing + JavaScript,Microsoft Azure,2,9,0.692,7.281
+PowerShell,Python,1,9,0.692,2.673
+CI/CD + GitHub,DevOps,2,11,0.688,4.279
+Cloud Computing + Kubernetes,CI/CD,2,11,0.688,5.667
+Cloud Computing + Kubernetes,Python,2,11,0.688,2.654
+Cloud Computing + SQL,Amazon Web Services (AWS),2,13,0.684,4.259
+Amazon Web Services (AWS) + DevOps,Microsoft Azure,2,13,0.684,7.196
+CI/CD,Cloud Computing,1,25,0.676,3.031
+GitHub,CI/CD,1,16,0.667,5.495
+Docker,Amazon Web Services (AWS),1,10,0.667,4.15
+Docker,Python,1,10,0.667,2.574
+Docker,Kubernetes,1,10,0.667,10.167
+DevOps + Java,Amazon Web Services (AWS),2,8,0.667,4.15
+Cloud Computing + Docker,DevOps,2,8,0.667,4.15
+Cloud Computing + Docker,Python,2,8,0.667,2.574
+CI/CD + JavaScript,Amazon Web Services (AWS),2,8,0.667,4.15
+CI/CD + JavaScript,GitHub,2,8,0.667,8.472
+Cloud Computing + Computer Networking,Python,2,8,0.667,2.574
+CI/CD + Kubernetes,Amazon Web Services (AWS),2,8,0.667,4.15
+CI/CD + Kubernetes,DevOps,2,8,0.667,4.15
+CI/CD + Kubernetes,Docker,2,8,0.667,13.556
+DevOps,Cloud Computing,1,32,0.653,2.929
+Cybersecurity (general),Cloud Computing,1,9,0.643,2.883
+Cloud Computing + Java,DevOps,2,9,0.643,4.001
+Cloud Computing + Java,Microsoft Azure,2,9,0.643,6.761
+Java + Python,Cloud Computing,2,9,0.643,2.883
+Cloud Computing + Java,Python,2,9,0.643,2.482
+Cloud Computing + GitHub,Microsoft Azure,2,9,0.643,6.761
+JavaScript + SQL,Git,2,9,0.643,9.804
+Git + JavaScript,SQL,2,9,0.643,3.501
+Cybersecurity (general),Computer Networking,1,9,0.643,5.767
+Computer Networking + Windows,Computer Hardware,2,9,0.643,11.534
+CI/CD + Cloud Computing,DevOps,2,16,0.64,3.984
+Cloud Computing + SQL,Microsoft Azure,2,12,0.632,6.642
+Amazon Web Services (AWS) + SQL,Microsoft Azure,2,10,0.625,6.573
+Amazon Web Services (AWS) + SQL,Python,2,10,0.625,2.413
+CI/CD + GitHub,Cloud Computing,2,10,0.625,2.803
+Cloud Computing + Kubernetes,DevOps,2,10,0.625,3.89
+TypeScript,React,1,10,0.625,7.943
+CI/CD,DevOps,1,23,0.622,3.869
+Amazon Web Services (AWS) + Microsoft Azure,DevOps,2,13,0.619,3.853
+Cloud Computing + JavaScript,Amazon Web Services (AWS),2,8,0.615,3.83
+Computer Networking + Python,Cloud Computing,2,8,0.615,2.76
+Cloud Computing + JavaScript,Java,2,8,0.615,6.703
+Cloud Computing + JavaScript,Python,2,8,0.615,2.376
+PowerShell,Cloud Computing,1,8,0.615,2.76
+Amazon Web Services (AWS) + CI/CD,DevOps,2,11,0.611,3.804
+Amazon Web Services (AWS) + CI/CD,Microsoft Azure,2,11,0.611,6.427
+JavaScript + React,Git,2,11,0.611,9.319
+Cloud Computing + Python,Amazon Web Services (AWS),2,17,0.607,3.779
+Microsoft Office,Microsoft Excel,1,33,0.6,1.947
+CI/CD + Cloud Computing,Amazon Web Services (AWS),2,15,0.6,3.735
+Kubernetes,CI/CD,1,12,0.6,4.946
+Docker,DevOps,1,9,0.6,3.735
+CI/CD + Python,DevOps,2,9,0.6,3.735
+GitHub,Cloud Computing,1,14,0.583,2.616
+GitHub,DevOps,1,14,0.583,3.631
+Amazon Web Services (AWS) + DevOps,CI/CD,2,11,0.579,4.772
+Cloud Computing,Amazon Web Services (AWS),1,39,0.574,3.57
+Cybersecurity (general),Python,1,8,0.571,2.206
+Java + Python,Amazon Web Services (AWS),2,8,0.571,3.557
+Microsoft Azure + Python,DevOps,2,8,0.571,3.557
+Cloud Computing + Java,CI/CD,2,8,0.571,4.71
+Cloud Computing + Java,JavaScript,2,8,0.571,4.98
+DevOps + GitHub,Microsoft Azure,2,8,0.571,6.01
+DevOps + GitHub,Python,2,8,0.571,2.206
+Java + Python,JavaScript,2,8,0.571,4.98
+JavaScript + SQL,React,2,8,0.571,7.262
+Cloud Computing + DevOps,Amazon Web Services (AWS),2,18,0.562,3.501
+HTML,JavaScript,1,9,0.562,4.902
+Cloud Computing + Kubernetes,Amazon Web Services (AWS),2,9,0.562,3.501
+Cloud Computing + Kubernetes,Docker,2,9,0.562,11.438
+Computer Hardware + Computer Networking,Windows,2,9,0.562,6.599
+CI/CD + Cloud Computing,Microsoft Azure,2,14,0.56,5.89
+Microsoft Azure,DevOps,1,16,0.552,3.434
+Cloud Computing + Microsoft Azure,DevOps,2,16,0.552,3.434
+Git,Cloud Computing,1,11,0.55,2.467
+Git,SQL,1,11,0.55,2.996
+Kubernetes,Amazon Web Services (AWS),1,11,0.55,3.423
+ASP.NET,SQL,1,11,0.55,2.996
+Git,React,1,11,0.55,6.99
+Amazon Web Services (AWS) + Cloud Computing,Microsoft Azure,2,21,0.538,5.663
+Windows,Computer Networking,1,14,0.538,4.83
+CI/CD + Python,Amazon Web Services (AWS),2,8,0.533,3.32
+CI/CD + Python,GitHub,2,8,0.533,6.778
+DevOps + Python,CI/CD,2,9,0.529,4.364
+Computer Hardware,Windows,1,9,0.529,6.21
+Cloud Computing + SQL,Python,2,10,0.526,2.032
+UI/UX Design,Cloud Computing,1,10,0.526,2.361
+Amazon Web Services (AWS) + Microsoft Azure,Python,2,11,0.524,2.022
+Amazon Web Services (AWS) + Microsoft Azure,CI/CD,2,11,0.524,4.318
+CI/CD + DevOps,Microsoft Azure,2,12,0.522,5.487
+Linux,Python,1,13,0.52,2.008
+SQL,Python,1,29,0.518,1.999
+JavaScript,React,1,18,0.514,6.536
+Cloud Computing + DevOps,Microsoft Azure,2,16,0.5,5.259
+Cloud Computing + DevOps,CI/CD,2,16,0.5,4.122
+Java,Cloud Computing,1,14,0.5,2.243
+Java,Python,1,14,0.5,1.93
+Cloud Computing + Python,Microsoft Azure,2,14,0.5,5.259
+Kubernetes,DevOps,1,10,0.5,3.112
+Kubernetes,Docker,1,10,0.5,10.167
+JavaScript + React,TypeScript,2,9,0.5,9.531
+JavaScript + React,Angular,2,9,0.5,15.25
+JavaScript + React,AngularJS,2,9,0.5,15.25
+DevOps + Microsoft Azure,Python,2,8,0.5,1.93
+HTML,CSS,1,8,0.5,16.944
+CI/CD + GitHub,JavaScript,2,8,0.5,4.357
+CI/CD + GitHub,Python,2,8,0.5,1.93
+JavaScript + Python,Cloud Computing,2,8,0.5,2.243
+DevOps + Microsoft Azure,GitHub,2,8,0.5,6.354
+JavaScript + Python,Java,2,8,0.5,5.446
+Computer Hardware + Computer Networking,TCP/IP,2,8,0.5,13.864
+Amazon Web Services (AWS),Python,1,24,0.49,1.891
+CI/CD,Amazon Web Services (AWS),1,18,0.486,3.028
+Microsoft Azure,Python,1,14,0.483,1.864
+Cloud Computing + Microsoft Azure,Python,2,14,0.483,1.864
+Microsoft Azure,CI/CD,1,14,0.483,3.979
+Cloud Computing + Microsoft Azure,CI/CD,2,14,0.483,3.979
+CI/CD + DevOps,Amazon Web Services (AWS),2,11,0.478,2.977
+CI/CD + DevOps,GitHub,2,11,0.478,6.078
+Amazon Web Services (AWS) + Microsoft Azure,SQL,2,10,0.476,2.594
+Cloud Computing + SQL,DevOps,2,9,0.474,2.948
+Cloud Computing + SQL,CI/CD,2,9,0.474,3.905
+Cloud Computing,DevOps,1,32,0.471,2.929
+Computer Networking,Computer Hardware,1,16,0.471,8.443
+DevOps + Python,Amazon Web Services (AWS),2,8,0.471,2.929
+DevOps + Python,Microsoft Azure,2,8,0.471,4.949
+DevOps + Python,GitHub,2,8,0.471,5.98
+Computer Hardware,TCP/IP,1,8,0.471,13.048
+DevOps,CI/CD,1,23,0.469,3.869
+Java,SQL,1,13,0.464,2.529
+Amazon Web Services (AWS) + Cloud Computing,DevOps,2,18,0.462,2.873
+Amazon Web Services (AWS) + Python,Microsoft Azure,2,11,0.458,4.82
+React,Amazon Web Services (AWS),1,11,0.458,2.853
+GitHub,JavaScript,1,11,0.458,3.994
+GitHub,Python,1,11,0.458,1.77
+React,Git,1,11,0.458,6.99
+JavaScript,Python,1,16,0.457,1.765
+Git,Amazon Web Services (AWS),1,9,0.45,2.801
+Git,Python,1,9,0.45,1.737
+ASP.NET,Java,1,9,0.45,4.902
+Amazon Web Services (AWS) + CI/CD,JavaScript,2,8,0.444,3.873
+Amazon Web Services (AWS) + CI/CD,Python,2,8,0.444,1.716
+Amazon Web Services (AWS) + CI/CD,Kubernetes,2,8,0.444,6.778
+JavaScript + React,SQL,2,8,0.444,2.421
+Machine Learning,Cloud Computing,1,8,0.444,1.993
+Machine Learning,Python,1,8,0.444,1.716
+Linux,Cloud Computing,1,11,0.44,1.974
+CI/CD + Cloud Computing,Python,2,11,0.44,1.699
+CI/CD + Cloud Computing,Kubernetes,2,11,0.44,6.71
+Amazon Web Services (AWS) + Cloud Computing,Python,2,17,0.436,1.683
+CI/CD,GitHub,1,16,0.432,5.495
+Amazon Web Services (AWS),Microsoft Azure,1,21,0.429,4.507
+Java,DevOps,1,12,0.429,2.668
+Cloud Computing + Python,DevOps,2,12,0.429,2.668
+Scrum,Cloud Computing,1,9,0.429,1.922
+Cloud Computing,Microsoft Azure,1,29,0.426,4.485
+Amazon Web Services (AWS) + DevOps,Java,2,8,0.421,4.586
+Amazon Web Services (AWS) + DevOps,Python,2,8,0.421,1.626
+Cloud Computing + SQL,Git,2,8,0.421,6.421
+Amazon Web Services (AWS) + Python,SQL,2,10,0.417,2.269
+React,Cloud Computing,1,10,0.417,1.869
+React,Angular,1,10,0.417,12.708
+React,AngularJS,1,10,0.417,12.708
+React,TypeScript,1,10,0.417,7.943
+Programming,JavaScript,1,10,0.417,3.631
+Microsoft Azure,SQL,1,12,0.414,2.254
+Cloud Computing + Microsoft Azure,SQL,2,12,0.414,2.254
+Cloud Computing,Python,1,28,0.412,1.59
+Computer Networking,Windows,1,14,0.412,4.83
+Software Engineering,Python,1,13,0.406,1.568
+CI/CD,Python,1,15,0.405,1.565
+JavaScript,Git,1,14,0.4,6.1
+JavaScript,SQL,1,14,0.4,2.179
+Linux,SQL,1,10,0.4,2.179
+CI/CD + Cloud Computing,GitHub,2,10,0.4,5.083
+Git,CI/CD,1,8,0.4,3.297
+Debugging,Amazon Web Services (AWS),1,8,0.4,2.49
+Debugging,Cloud Computing,1,8,0.4,1.794
+Microsoft Excel,Microsoft PowerPoint,1,37,0.394,3.001
+Java,Amazon Web Services (AWS),1,11,0.393,2.445
+Java,CI/CD,1,11,0.393,3.238
+Java,JavaScript,1,11,0.393,3.423
+Cloud Computing + Python,CI/CD,2,11,0.393,3.238
+Cloud Computing + Python,Kubernetes,2,11,0.393,5.991
+CI/CD + DevOps,Java,2,9,0.391,4.262
+CI/CD + DevOps,Python,2,9,0.391,1.511
+DevOps,Amazon Web Services (AWS),1,19,0.388,2.414
+Amazon Web Services (AWS),DevOps,1,19,0.388,2.414
+Amazon Web Services (AWS) + Cloud Computing,CI/CD,2,15,0.385,3.17
+Computer Networking,Python,1,13,0.382,1.476
+Amazon Web Services (AWS) + Microsoft Azure,Java,2,8,0.381,4.15
+CI/CD,Microsoft Azure,1,14,0.378,3.979
+Cloud Computing + DevOps,Python,2,12,0.375,1.448
+Software Engineering,JavaScript,1,12,0.375,3.268
+Oracle Database,Cloud Computing,1,9,0.375,1.682
+Oracle Database,SQL,1,9,0.375,2.042
+React,SQL,1,9,0.375,2.042
+GitHub,Microsoft Azure,1,9,0.375,3.944
+Programming,SQL,1,9,0.375,2.042
+Programming,CI/CD,1,9,0.375,3.091
+JavaScript,Cloud Computing,1,13,0.371,1.666
+Cloud Computing,CI/CD,1,25,0.368,3.031
+Amazon Web Services (AWS),CI/CD,1,18,0.367,3.028
+Python,SQL,1,29,0.367,1.999
+Microsoft Excel + Microsoft Office,Microsoft PowerPoint,2,12,0.364,2.773
+Linux,Computer Networking,1,9,0.36,3.229
+Linux,Windows,1,9,0.36,4.223
+CI/CD + Cloud Computing,JavaScript,2,9,0.36,3.137
+CI/CD + Cloud Computing,SQL,2,9,0.36,1.961
+CI/CD + Cloud Computing,Docker,2,9,0.36,7.32
+Cloud Computing + Python,SQL,2,10,0.357,1.945
+Python,Cloud Computing,1,28,0.354,1.59
+Computer Networking,Cloud Computing,1,12,0.353,1.583
+Microsoft Excel,Microsoft Office,1,33,0.351,1.947
+CI/CD + DevOps,Kubernetes,2,8,0.348,5.304
+DevOps,Python,1,17,0.347,1.339
+Windows,Linux,1,9,0.346,4.223
+Windows,Computer Hardware,1,9,0.346,6.21
+Python + SQL,Amazon Web Services (AWS),2,10,0.345,2.146
+Python + SQL,Cloud Computing,2,10,0.345,1.547
+Software Engineering,Cloud Computing,1,11,0.344,1.542
+JavaScript,Software Engineering,1,12,0.343,3.268
+JavaScript,CI/CD,1,12,0.343,2.826
+JavaScript,TypeScript,1,12,0.343,6.536
+SQL,Cloud Computing,1,19,0.339,1.522
+Amazon Web Services (AWS) + Cloud Computing,SQL,2,13,0.333,1.815
+Amazon Web Services (AWS) + Python,DevOps,2,8,0.333,2.075
+Amazon Web Services (AWS) + Python,Java,2,8,0.333,3.631
+React,Java,1,8,0.333,3.631
+GitHub,Amazon Web Services (AWS),1,8,0.333,2.075
+Amazon Web Services (AWS) + Python,CI/CD,2,8,0.333,2.748
+Programming,GitHub,1,8,0.333,4.236
+GitHub,Programming,1,8,0.333,4.236
+Amazon Web Services (AWS),SQL,1,16,0.327,1.778
+DevOps,Microsoft Azure,1,16,0.327,3.434
+Microsoft Excel + Microsoft PowerPoint,Microsoft Office,2,12,0.324,1.799
+CI/CD,JavaScript,1,12,0.324,2.826
+CI/CD,Kubernetes,1,12,0.324,4.946
+Java,Microsoft Azure,1,9,0.321,3.381
+Cloud Computing + Python,Java,2,9,0.321,3.501
+Java,ASP.NET,1,9,0.321,4.902
+Linux,CI/CD,1,8,0.32,2.638
+Linux,JavaScript,1,8,0.32,2.789
+Linux,Microsoft Azure,1,8,0.32,3.366
+CI/CD + Cloud Computing,Java,2,8,0.32,3.486
+JavaScript,Java,1,11,0.314,3.423
+JavaScript,GitHub,1,11,0.314,3.994
+Cloud Computing + DevOps,GitHub,2,10,0.312,3.971
+Cloud Computing + DevOps,Kubernetes,2,10,0.312,4.766
+Microsoft Azure,Java,1,9,0.31,3.381
+Cloud Computing + Microsoft Azure,Java,2,9,0.31,3.381
+Microsoft Azure,GitHub,1,9,0.31,3.944
+Microsoft Azure,JavaScript,1,9,0.31,2.704
+Cloud Computing + Microsoft Azure,GitHub,2,9,0.31,3.944
+Cloud Computing + Microsoft Azure,JavaScript,2,9,0.31,2.704
+Windows,Python,1,8,0.308,1.188
+Python,Amazon Web Services (AWS),1,24,0.304,1.891
+Microsoft PowerPoint,Microsoft Office,1,12,0.3,1.664
+CI/CD,Java,1,11,0.297,3.238
+CI/CD,Docker,1,11,0.297,6.045
+Computer Networking,TCP/IP,1,10,0.294,8.155
+SQL,Amazon Web Services (AWS),1,16,0.286,1.778
+DevOps,GitHub,1,14,0.286,3.631
+JavaScript,Amazon Web Services (AWS),1,10,0.286,1.778
+JavaScript,DevOps,1,10,0.286,1.778
+JavaScript,Programming,1,10,0.286,3.631
+Cloud Computing + Python,Docker,2,8,0.286,5.81
+Java,React,1,8,0.286,3.631
+Java,Software Engineering,1,8,0.286,2.723
+Cloud Computing + Python,Computer Networking,2,8,0.286,2.563
+Cloud Computing + Python,JavaScript,2,8,0.286,2.49
+Amazon Web Services (AWS) + Cloud Computing,Java,2,11,0.282,3.072
+Cloud Computing + DevOps,Java,2,9,0.281,3.064
+Cloud Computing + DevOps,SQL,2,9,0.281,1.532
+Software Engineering,Amazon Web Services (AWS),1,9,0.281,1.751
+Cloud Computing,SQL,1,19,0.279,1.522
+Microsoft Azure,Linux,1,8,0.276,3.366
+Cloud Computing + Microsoft Azure,Linux,2,8,0.276,3.366
+CI/CD,SQL,1,10,0.27,1.472
+Computer Networking,Linux,1,9,0.265,3.229
+Computer Networking,Cybersecurity (general),1,9,0.265,5.767
+JavaScript,HTML,1,9,0.257,4.902
+JavaScript,Microsoft Azure,1,9,0.257,2.704
+JavaScript,Angular,1,9,0.257,7.843
+JavaScript,AngularJS,1,9,0.257,7.843
+SQL,JavaScript,1,14,0.25,2.179
+Cloud Computing + DevOps,Docker,2,8,0.25,5.083
+Software Engineering,Java,1,8,0.25,2.723
+DevOps,Java,1,12,0.245,2.668
+Microsoft Excel,Microsoft Word,1,23,0.245,2.985
+CI/CD,Programming,1,9,0.243,3.091
+Cloud Computing,Kubernetes,1,16,0.235,3.588
+Computer Networking,DevOps,1,8,0.235,1.465
+Computer Networking,Cisco Networking,1,8,0.235,8.971
+SQL,Java,1,13,0.232,2.529
+Amazon Web Services (AWS) + Cloud Computing,Kubernetes,2,9,0.231,3.519
+JavaScript,Linux,1,8,0.229,2.789
+Amazon Web Services (AWS),Java,1,11,0.224,2.445
+DevOps,SQL,1,11,0.224,1.223
+Amazon Web Services (AWS),React,1,11,0.224,2.853
+Amazon Web Services (AWS),Kubernetes,1,11,0.224,3.423
+Microsoft Office,Microsoft PowerPoint,1,12,0.218,1.664
+CI/CD,Git,1,8,0.216,3.297
+CI/CD,Jenkins,1,8,0.216,6.595
+CI/CD,Linux,1,8,0.216,2.638
+CI/CD,Orchestration,1,8,0.216,6.595
+Python,DevOps,1,17,0.215,1.339
+SQL,Microsoft Azure,1,12,0.214,2.254
+Cloud Computing,Java,1,14,0.206,2.243
+Cloud Computing,GitHub,1,14,0.206,2.616
+Amazon Web Services (AWS) + Cloud Computing,JavaScript,2,8,0.205,1.788
+Amazon Web Services (AWS) + Cloud Computing,Software Engineering,2,8,0.205,1.955
+Amazon Web Services (AWS),Docker,1,10,0.204,4.15
+Amazon Web Services (AWS),JavaScript,1,10,0.204,1.778
+DevOps,JavaScript,1,10,0.204,1.778
+DevOps,Kubernetes,1,10,0.204,3.112
+Python,JavaScript,1,16,0.203,1.765
+SQL,DevOps,1,11,0.196,1.223
+SQL,Git,1,11,0.196,2.996
+SQL,Microsoft SQL Server,1,11,0.196,4.993
+SQL,ASP.NET,1,11,0.196,2.996
+Cloud Computing,JavaScript,1,13,0.191,1.666
+Python,CI/CD,1,15,0.19,1.565
+DevOps,Docker,1,9,0.184,3.735
+Amazon Web Services (AWS),Git,1,9,0.184,2.801
+Amazon Web Services (AWS),Software Engineering,1,9,0.184,1.751
+SQL,Linux,1,10,0.179,2.179
+SQL,CI/CD,1,10,0.179,1.472
+Python,Java,1,14,0.177,1.93
+Python,Microsoft Azure,1,14,0.177,1.864
+Python,Kubernetes,1,14,0.177,2.703
+Cloud Computing,Docker,1,12,0.176,3.588
+Cloud Computing,Computer Networking,1,12,0.176,1.583
+Python,Microsoft Excel,1,13,0.165,0.534
+Python,Linux,1,13,0.165,2.008
+Python,Software Engineering,1,13,0.165,1.568
+Python,Computer Networking,1,13,0.165,1.476
+DevOps,Computer Networking,1,8,0.163,1.465
+Amazon Web Services (AWS),GitHub,1,8,0.163,2.075
+Amazon Web Services (AWS),Debugging,1,8,0.163,2.49
+Cloud Computing,Git,1,11,0.162,2.467
+Cloud Computing,Linux,1,11,0.162,1.974
+Cloud Computing,Software Engineering,1,11,0.162,1.542
+SQL,Microsoft Excel,1,9,0.161,0.521
+SQL,Oracle Database,1,9,0.161,2.042
+SQL,React,1,9,0.161,2.042
+SQL,Programming,1,9,0.161,2.042
+Cloud Computing,React,1,10,0.147,1.869
+Cloud Computing,UI/UX Design,1,10,0.147,2.361
+Cloud Computing,Google Cloud Platform,1,10,0.147,4.485
+Python,GitHub,1,11,0.139,1.77
+Microsoft Excel,Python,1,13,0.138,0.534
+Cloud Computing,Cybersecurity (general),1,9,0.132,2.883
+Cloud Computing,Oracle Database,1,9,0.132,1.682
+Cloud Computing,Scrum,1,9,0.132,1.922
+Cloud Computing,Terraform,1,9,0.132,3.67
+Cloud Computing,Orchestration,1,9,0.132,4.037
+Python,Docker,1,10,0.127,2.574
+Cloud Computing,Bash,1,8,0.118,3.987
+Cloud Computing,Debugging,1,8,0.118,1.794
+Cloud Computing,PowerShell,1,8,0.118,2.76
+Cloud Computing,Machine Learning,1,8,0.118,1.993
+Python,Terraform,1,9,0.114,3.159
+Python,Git,1,9,0.114,1.737
+Python,PowerShell,1,9,0.114,2.673
+Python,Bash,1,8,0.101,3.432
+Python,Cybersecurity (general),1,8,0.101,2.206
+Python,Windows,1,8,0.101,1.188
+Python,Ansible,1,8,0.101,3.861
+Python,Machine Learning,1,8,0.101,1.716
+Microsoft Excel,SQL,1,9,0.096,0.521
