@@ -590,6 +590,9 @@ def ml_tab():
     st.divider()
     model_card('Skill prediction from job title (logistic regression)', 'supervised classification',
                '7. Can a job title tell us which skills the job needs?')
+    st.markdown('**How it works.** The model reads only the job title, for example "Senior Java Developer", and guesses '
+                'which skills the posting asks for. Its guesses are then checked against postings where the skills are '
+                'known. If this worked well, it could fill in skills for the many postings that list none.')
     sc = r['title_scores'].sort_values('average_precision')
     fig = go.Figure()
     fig.add_bar(x=sc['average_precision'], y=sc.index, orientation='h', marker_color=BLUE, name='Model',
@@ -601,7 +604,8 @@ def ml_tab():
     fig.update_xaxes(title='Prediction quality (average precision, 0 to 1)', range=[0, 1])
     fig.update_layout(legend=dict(orientation='h', y=-0.12))
     st.plotly_chart(layout(fig, 'How well the title predicts each skill',
-                           'A perfect model scores 1. The grey mark is what random guessing would score.',
+                           'Longer bar = better guesses (1 would be perfect). Grey mark = the score random guessing '
+                           'would get. A bar that barely passes its grey mark means the model is close to guessing.',
                            height=26 * len(sc) + 150), use_container_width=True)
     sg = r['title_sugg']
     st.markdown('**What it suggests for postings that have no skill listed** (its most confident guesses)')
@@ -610,15 +614,16 @@ def ml_tab():
                  use_container_width=True, hide_index=True)
     best, worst = sc.index[-1], sc.index[0]
     takeaways(
-        f'It works for skills that show up in the title itself: {best} scores {sc["average_precision"].iloc[-1]:.2f} '
-        f'against {sc["base_rate"].iloc[-1]:.2f} for random guessing. It fails for general skills: {worst} scores '
-        f'{sc["average_precision"].iloc[0]:.2f}. The table shows the result: sensible guesses mixed with clearly wrong ones.',
+        f'It guesses well only when the skill is usually named in the job title. {best} is the best case: the word '
+        f'"{best}" often appears in the title itself, and the model scores {sc["average_precision"].iloc[-1]:.2f} out of 1 '
+        f'(random guessing would score {sc["base_rate"].iloc[-1]:.2f}). {worst} is the worst case: the jobs that need it '
+        f'have all kinds of titles that never mention it, so the model scores {sc["average_precision"].iloc[0]:.2f}, '
+        'barely better than guessing. The table above shows the result: sensible guesses mixed with clearly wrong ones.',
         'It is the only model here that could fill in skills for the many postings that list none.',
         'A title is too little to go on. Even its most confident guesses include mistakes, so it should not be used to '
         'fill in data without the full job description.')
 
     # ---- Agreement ----
-    st.divider()
     st.subheader('Do the grouping models agree with each other?')
     st.markdown('**Compared: manual course areas, Louvain, LDA and hierarchical clustering**')
     left, right = st.columns([1, 1])
@@ -644,22 +649,24 @@ def ml_tab():
     # ---- Summary ----
     st.divider()
     st.subheader('Summary: which models fit skill data best')
-    st.dataframe(pd.DataFrame([
-        {'Model': 'Association rules (Apriori)', 'Best used for': 'Deciding what goes into a course',
-         'Result here': f'{len(strong)} strong pairings', 'Fit for skills': 'Best'},
-        {'Model': 'Skill recommender', 'Best used for': 'Learning paths: what to learn next',
-         'Result here': f"Top-5 hit rate {r['hit']:.0%} (guessing: {r['hit_pop']:.0%})", 'Fit for skills': 'Best'},
-        {'Model': 'Network communities (Louvain)', 'Best used for': 'Big-picture groups and bridge skills',
-         'Result here': f"{n_comm} groups, separation score {r['modularity']:.2f}", 'Fit for skills': 'Good'},
-        {'Model': 'Topic model (LDA)', 'Best used for': 'Seeing which job types exist and how they mix',
-         'Result here': f'{mixed:.0%} of postings mix job types', 'Fit for skills': 'Good'},
-        {'Model': 'Hierarchical clustering', 'Best used for': 'Small, tight course modules',
-         'Result here': f'{len(hb)} tight bundles', 'Fit for skills': 'Good'},
-        {'Model': 'Skill embeddings', 'Best used for': 'Finding similar or alternative skills',
-         'Result here': 'Sensible only for common skills', 'Fit for skills': 'Needs more data'},
-        {'Model': 'Skill prediction from job title', 'Best used for': 'Filling in missing skills',
-         'Result here': f'Works for {best}, fails for {worst}', 'Fit for skills': 'Not reliable yet'},
-    ])[['Model', 'Fit for skills', 'Best used for', 'Result here']], use_container_width=True, hide_index=True)
+    st.table(pd.DataFrame([
+        {'Model': 'Association rules (Apriori)', 'Fit for skills': 'Best', 'Best used for': 'Deciding what goes into a course',
+         'What it showed here': f'{len(strong)} pairs of skills that employers usually ask for together'},
+        {'Model': 'Skill recommender', 'Fit for skills': 'Best', 'Best used for': 'Learning paths: what to learn next',
+         'What it showed here': f"Its top 5 suggestions include the right next skill {r['hit']:.0%} of the time. "
+                                f"Just suggesting popular skills manages {r['hit_pop']:.0%}"},
+        {'Model': 'Network communities (Louvain)', 'Fit for skills': 'Good', 'Best used for': 'Big-picture groups and bridge skills',
+         'What it showed here': f'{n_comm} groups of related skills, though the groups overlap'},
+        {'Model': 'Topic model (LDA)', 'Fit for skills': 'Good', 'Best used for': 'Seeing which job types exist and how they mix',
+         'What it showed here': f'{len(phi)} job types. {mixed:.0%} of postings combine two or more of them'},
+        {'Model': 'Hierarchical clustering', 'Fit for skills': 'Good', 'Best used for': 'Small, tight course modules',
+         'What it showed here': f'{len(hb)} small bundles of skills that are almost always asked for together'},
+        {'Model': 'Skill embeddings', 'Fit for skills': 'Needs more data', 'Best used for': 'Finding similar or alternative skills',
+         'What it showed here': 'Sensible results for common skills such as React or Excel. Unreliable for less common skills'},
+        {'Model': 'Skill prediction from job title', 'Fit for skills': 'Not reliable yet', 'Best used for': 'Filling in missing skills',
+         'What it showed here': f'Guesses well only when the skill is named in the job title (such as {best}). For general '
+                                f'skills that titles never mention (such as {worst}) it is close to random guessing'},
+    ]).set_index('Model'))
     st.markdown(
         '**The short version**\n'
         '- **Use association rules first.** They give clear statements such as "most AWS postings also ask for Cloud '
