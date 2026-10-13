@@ -91,7 +91,7 @@ MODES = {'Count only when a specific skill confirms them (recommended)': 'corrob
 
 # ---- Global settings (apply to Course Opportunities and Skill Bundles) ----
 st.sidebar.header('Global settings')
-st.sidebar.caption('Apply to Course Opportunities, Skill Bundles and Skill ML Insights. Salary Overview has its own filters on its tab.')
+st.sidebar.caption('Apply to every tab except Salary Overview, which has its own filters.')
 without_devjobs = st.sidebar.toggle('Exclude devjobs postings', value=False,
                                     help='devjobs is a tech-only job board that supplies most tech postings in this '
                                          'data. Turn this on to see whether a result depends on that one board.')
@@ -145,6 +145,7 @@ def course_tab():
     if without_devjobs:
         area['devjobs_pct'] = full['devjobs_pct'].reindex(area.index)
         area['confidence'] = [confidence(j, 0) for j in area['jobs']]
+    st.session_state['area_scores'], st.session_state['weights'] = area, weights
 
     with top:
         st.subheader('Three course areas worth validating next')
@@ -165,14 +166,14 @@ def course_tab():
                     lines.append('Rank without devjobs: ' + ('not enough data' if pd.isna(wo_rank) else str(int(wo_rank))))
                 st.markdown('\n'.join(f'- {x}' for x in lines))
 
-        focus = st.selectbox('Focus area', area.index.tolist(), help='Highlighted in the charts below')
+        top3 = set(area.index[:3])
 
         left, right = st.columns(2)
         with left:
             g = area.sort_values('score')
             fig = go.Figure(go.Bar(x=g['score'], y=g.index, orientation='h', text=g['score'].round().astype(int),
                                    textposition='outside', cliponaxis=False,
-                                   marker_color=[BLUE if a == focus else GRAY for a in g.index],
+                                   marker_color=[BLUE if a in top3 else GRAY for a in g.index],
                                    customdata=g[['jobs', 'companies', 'confidence']],
                                    hovertemplate='<b>%{y}</b><br>Score %{x:.0f}<br>%{customdata[0]} postings, '
                                                  '%{customdata[1]} companies<br>Confidence: %{customdata[2]}<extra></extra>'))
@@ -191,14 +192,14 @@ def course_tab():
                                    'Rank on each signal: 0 = weakest area, 100 = strongest.',
                                    height=30 * len(h) + 110), use_container_width=True)
 
-        # Demand vs salary difference: label only the focus area and the top three
+        # Demand vs salary difference: label and highlight only the top three
         g = area.reset_index()
-        g['label'] = [a if (a == focus or i < 3) else '' for i, a in enumerate(g['area'])]
-        g['pos'] = ['bottom center' if (i == 1 and a != focus) else 'top center' for i, a in enumerate(g['area'])]
+        g['label'] = [a if i < 3 else '' for i, a in enumerate(g['area'])]
+        g['pos'] = ['bottom center' if i == 1 else 'top center' for i in range(len(g))]
         fig = go.Figure(go.Scatter(
             x=g['jobs'], y=g['salary_premium_pct'], mode='markers+text', text=g['label'], textposition=g['pos'],
             marker=dict(size=g['companies'], sizemode='area', sizeref=2 * g['companies'].max() / 44 ** 2, sizemin=5,
-                        color=[BLUE if a == focus else GRAY for a in g['area']], line=dict(color='white', width=2)),
+                        color=[BLUE if a in top3 else GRAY for a in g['area']], line=dict(color='white', width=2)),
             customdata=g[['area', 'companies', 'median_salary', 'confidence']],
             hovertemplate='<b>%{customdata[0]}</b><br>%{x} postings, %{customdata[1]} companies<br>'
                           'Salary difference %{y:+.0f}%<br>Median salary $%{customdata[2]:,.0f}<br>'
@@ -249,28 +250,7 @@ def course_tab():
                    'share of postings in Sep 2025 with Mar 2026 on LinkedIn and Greenhouse only. It is a two-point '
                    'comparison, not a continuous growth trend, and is shown only where at least 20 postings are involved.')
 
-        st.subheader(f'Skills within {focus}')
-        sk = sa.opportunity(skill_wo if without_devjobs else skill_all, *weights)
-        sk = sk[sk['area'] == focus].sort_values('jobs', ascending=False)
-        if sk.empty:
-            st.info('No skill in this area has at least 5 postings.')
-        else:
-            left, right = st.columns(2)
-            with left:
-                g = sk.head(15).sort_values('jobs')
-                fig = go.Figure(go.Bar(x=g['jobs'], y=g.index, orientation='h', marker_color=BLUE, text=g['jobs'],
-                                       textposition='outside', cliponaxis=False,
-                                       hovertemplate='<b>%{y}</b><br>%{x} postings<extra></extra>'))
-                fig.update_xaxes(title='Postings')
-                st.plotly_chart(layout(fig, 'Most requested skills', height=28 * len(g) + 100), use_container_width=True)
-            with right:
-                st.dataframe(pd.DataFrame({
-                    'Postings': sk['jobs'].astype(int), 'Companies': sk['companies'].astype(int),
-                    'Median salary': sk['median_salary'].map(money),
-                    'Salary difference': [f'{v:+.0f}%' if n >= 20 else 'too few postings'
-                                          for v, n in zip(sk['salary_premium_pct'], sk['jobs'])]}).rename_axis('Skill'),
-                    use_container_width=True)
-            st.caption('Salary difference is shown only for skills with at least 20 postings.')
+        st.caption('For the skills, pay and employers behind one area, open the **Area Deep Dive** tab.')
 
         with st.expander('What this dashboard cannot tell you'):
             st.markdown(
@@ -295,6 +275,185 @@ def course_tab():
             st.dataframe(pd.DataFrame({'Postings with tag': amb['postings_with_tag'], 'Confirmed': amb['corroborated'],
                                        'Confirmed share': amb['corroborated_pct'].map('{:.0f}%'.format)})
                          .rename_axis('Broad tag'), use_container_width=True)
+
+
+@st.cache_data
+def load_area_postings(mode, without_devjobs):
+    """One row per (posting, course area), with the posting's own columns."""
+    d = load()
+    if without_devjobs:
+        d = d[d['source'] != DEVJOBS]
+    long = sa.long_skills(d, mode)
+    return d, long
+
+
+def area_tab():
+    area = st.session_state.get('area_scores')
+    weights = st.session_state.get('weights')
+    if area is None:
+        st.info('Open the Course Opportunities tab first.')
+        return
+    d, long = load_area_postings(mode, without_devjobs)
+    st.markdown('Pick one course area to see what is behind its score: which skills employers ask for, what the jobs '
+                'pay, who is hiring and at what level.')
+    focus = st.selectbox('Course area', area.index.tolist(), key='focus_area')
+    r = area.loc[focus]
+    ids = long.loc[long['area'] == focus, 'job_id'].unique()
+    jobs = d.loc[ids]
+    paid = jobs.dropna(subset=['salary_annual'])
+
+    # ---- Headline ----
+    k = st.columns(5)
+    k[0].metric('Rank', f"{int(r['rank'])} of {len(area)}", help='By opportunity score, with the current weights')
+    k[1].metric('Opportunity score', f"{r['score']:.0f} / 100")
+    k[2].metric('Postings', f"{int(r['jobs']):,}", help=f"{int(r['companies'])} different companies")
+    k[3].metric('Median salary', money(r['median_salary']), delta=f"{r['salary_premium_pct']:+.0f}% vs similar jobs",
+                help='Annualized posted minimum. The comparison is with other postings at the same seniority and job board.')
+    k[4].metric('Confidence', r['confidence'], help=f"{r['devjobs_pct']:.0f}% of these postings come from devjobs")
+
+    # ---- Why this score ----
+    left, right = st.columns(2)
+    with left:
+        parts = {'rank_demand': 'Hiring demand', 'rank_salary': 'Salary difference',
+                 'rank_breadth': 'Employer coverage', 'rank_trend': 'Two-period change'}
+        vals = r[list(parts)].astype(float)
+        avg = area[list(parts)].mean()
+        order = list(parts)[::-1]
+        fig = go.Figure()
+        fig.add_bar(x=vals[order], y=[parts[p] for p in order], orientation='h', marker_color=BLUE, name=focus,
+                    text=vals[order].round().astype(int), textposition='outside', cliponaxis=False,
+                    hovertemplate='<b>%{y}</b><br>Rank %{x:.0f} of 100<extra></extra>')
+        fig.add_scatter(x=avg[order], y=[parts[p] for p in order], mode='markers', name='Average of all areas',
+                        marker=dict(symbol='line-ns', size=22, line=dict(width=2.5, color='#898781')), hoverinfo='skip')
+        fig.update_xaxes(range=[0, 112], title='Rank among all course areas (100 = strongest)')
+        fig.update_layout(legend=dict(orientation='h', y=-0.3))
+        st.plotly_chart(layout(fig, 'Why it scores this way', 'How the area ranks on each of the four signals.', height=330),
+                        use_container_width=True)
+        best, worst = vals.idxmax(), vals.idxmin()
+        st.caption(f'Strongest on **{parts[best].lower()}** (rank {vals[best]:.0f}), weakest on '
+                   f'**{parts[worst].lower()}** (rank {vals[worst]:.0f}).'
+                   + ('' if r['trend_reliable'] else ' Two-period change has too few postings here, so it is set to a neutral 50.'))
+    with right:
+        sk = long[long['area'] == focus].groupby('skill').agg(postings=('job_id', 'nunique'), companies=('company', 'nunique'),
+                                                              salary=('salary_annual', 'median'))
+        g = sk.sort_values('postings').tail(12)
+        fig = go.Figure(go.Bar(x=g['postings'], y=g.index, orientation='h', marker_color=BLUE, text=g['postings'],
+                               textposition='outside', cliponaxis=False, customdata=g[['companies', 'salary']],
+                               hovertemplate='<b>%{y}</b><br>%{x} postings, %{customdata[0]} companies<br>'
+                                             'Median salary $%{customdata[1]:,.0f}<extra></extra>'))
+        fig.update_xaxes(title='Postings')
+        st.plotly_chart(layout(fig, 'Skills employers ask for most', 'What a course in this area would need to cover.',
+                               height=max(330, 26 * len(g) + 110)), use_container_width=True)
+
+    # ---- Pay ----
+    st.subheader('What the jobs pay')
+    left, right = st.columns(2)
+    with left:
+        allpaid = d.dropna(subset=['salary_annual'])
+        rows = []
+        for label, part in [(focus, paid), ('All postings', allpaid)]:
+            for unit, name in [('annual', 'Salaried'), ('hourly', 'Hourly')]:
+                s = part.loc[part['salary_unit'] == unit, 'salary_annual']
+                if len(s) >= 5:
+                    rows.append({'group': f'{name}: {label}  (n={len(s)})', 'is_focus': label == focus,
+                                 'q25': s.quantile(.25), 'median': s.median(), 'q75': s.quantile(.75)})
+        q = pd.DataFrame(rows)[::-1]
+        fig = go.Figure(go.Scatter(
+            x=q['median'], y=q['group'], mode='markers',
+            marker=dict(size=12, color=[BLUE if f else '#898781' for f in q['is_focus']]),
+            error_x=dict(type='data', symmetric=False, array=q['q75'] - q['median'], arrayminus=q['median'] - q['q25'],
+                         color='#898781', thickness=2, width=0),
+            customdata=q[['q25', 'q75']],
+            hovertemplate='<b>%{y}</b><br>Median $%{x:,.0f}<br>Middle half: $%{customdata[0]:,.0f} to $%{customdata[1]:,.0f}<extra></extra>'))
+        fig.update_xaxes(tickprefix='$', tickformat=',.0f', rangemode='tozero', title='Annualized posted minimum salary')
+        st.plotly_chart(layout(fig, 'Pay compared with all postings',
+                               'Dot = median. Line = middle half of postings. Hourly pay is annualized at 2,080 hours.',
+                               height=300), use_container_width=True)
+    with right:
+        order = ['Intern', 'Junior', 'Medior', 'Senior', 'Lead', 'Director', 'Chief']
+        lv = paid.groupby('seniority_label')['salary_annual'].agg(n='size', median='median').reindex(order).dropna()
+        lv = lv[lv['n'] >= 3]
+        if lv.empty:
+            st.info('Too few postings state a seniority level to show pay by level.')
+        else:
+            fig = go.Figure(go.Bar(x=lv.index, y=lv['median'], marker_color=BLUE, customdata=lv['n'],
+                                   text=[f'${v / 1000:.0f}k' for v in lv['median']], textposition='outside', cliponaxis=False,
+                                   hovertemplate='<b>%{x}</b><br>Median $%{y:,.0f}<br>%{customdata} postings<extra></extra>'))
+            fig.update_yaxes(tickprefix='$', tickformat=',.0f', title=None, range=[0, lv['median'].max() * 1.18])
+            st.plotly_chart(layout(fig, 'Median pay by seniority level', 'Levels with at least 3 postings.', height=300),
+                            use_container_width=True)
+
+    # ---- Who is hiring ----
+    st.subheader('Who is hiring, and at what level')
+    c1, c2, c3 = st.columns(3)
+
+    def share_bar(series, title, subtitle, top=8):
+        s = series.value_counts().head(top)[::-1]
+        fig = go.Figure(go.Bar(x=s.values, y=[str(i) for i in s.index], orientation='h', marker_color=BLUE, text=s.values,
+                               textposition='outside', cliponaxis=False,
+                               hovertemplate='<b>%{y}</b><br>%{x} postings<extra></extra>'))
+        fig.update_xaxes(title='Postings', range=[0, s.max() * 1.2])
+        return layout(fig, title, subtitle, height=max(300, 28 * len(s) + 110))
+
+    with c1:
+        st.plotly_chart(share_bar(jobs['company'], 'Top hiring companies', f"{jobs['company'].nunique()} companies in total."),
+                        use_container_width=True)
+    with c2:
+        st.plotly_chart(share_bar(jobs['industry'], 'Industries', 'Where the demand comes from.'), use_container_width=True)
+    with c3:
+        lv = jobs['seniority_label'].fillna('Not stated')
+        cmp = pd.DataFrame({'area': lv.value_counts(normalize=True) * 100,
+                            'all': d['seniority_label'].fillna('Not stated').value_counts(normalize=True) * 100})
+        cmp = cmp.reindex(['Not stated', 'Chief', 'Director', 'Lead', 'Senior', 'Medior', 'Junior', 'Intern']).dropna(how='all').fillna(0)
+        fig = go.Figure()
+        fig.add_bar(x=cmp['area'], y=cmp.index, orientation='h', marker_color=BLUE, name=focus,
+                    hovertemplate='<b>%{y}</b><br>%{x:.0f}% of this area<extra></extra>')
+        fig.add_scatter(x=cmp['all'], y=cmp.index, mode='markers', name='All postings',
+                        marker=dict(symbol='line-ns', size=16, line=dict(width=2.5, color='#898781')),
+                        hovertemplate='<b>%{y}</b><br>%{x:.0f}% of all postings<extra></extra>')
+        fig.update_xaxes(ticksuffix='%', title='Share of postings')
+        fig.update_layout(legend=dict(orientation='h', y=-0.25))
+        st.plotly_chart(layout(fig, 'Seniority mix', 'Entry-level or experienced? Grey mark = all postings.',
+                               height=max(300, 28 * len(cmp) + 130)), use_container_width=True)
+
+    # ---- What to bundle with ----
+    st.subheader('What these jobs also ask for')
+    other = long[long['job_id'].isin(ids) & (long['area'] != focus)]
+    left, right = st.columns(2)
+    with left:
+        o = other.groupby('skill').agg(postings=('job_id', 'nunique'), area=('area', 'first')).sort_values('postings').tail(10)
+        if o.empty:
+            st.info('These postings rarely list skills from other areas.')
+        else:
+            o['share'] = o['postings'] / len(ids) * 100
+            fig = go.Figure(go.Bar(x=o['share'], y=o.index, orientation='h', marker_color=BLUE, customdata=o[['postings', 'area']],
+                                   text=[f'{v:.0f}%' for v in o['share']], textposition='outside', cliponaxis=False,
+                                   hovertemplate='<b>%{y}</b> (%{customdata[1]})<br>%{customdata[0]} postings<extra></extra>'))
+            fig.update_xaxes(ticksuffix='%', title=f'Share of {focus} postings', range=[0, o['share'].max() * 1.2])
+            st.plotly_chart(layout(fig, 'Skills from other areas', 'Candidates to bundle into the same course.',
+                                   height=max(300, 28 * len(o) + 110)), use_container_width=True)
+    with right:
+        oa = other.groupby('area')['job_id'].nunique().sort_values().tail(8)
+        if not oa.empty:
+            share = oa / len(ids) * 100
+            fig = go.Figure(go.Bar(x=share.values, y=share.index, orientation='h', marker_color=BLUE, customdata=oa.values,
+                                   text=[f'{v:.0f}%' for v in share.values], textposition='outside', cliponaxis=False,
+                                   hovertemplate='<b>%{y}</b><br>%{customdata} postings<extra></extra>'))
+            fig.update_xaxes(ticksuffix='%', title=f'Share of {focus} postings', range=[0, share.max() * 1.2])
+            st.plotly_chart(layout(fig, 'Overlap with other course areas',
+                                   'Postings that also ask for a skill from the other area.',
+                                   height=max(300, 28 * len(share) + 110)), use_container_width=True)
+
+    # ---- Example postings ----
+    st.subheader('Example postings')
+    ex = jobs.sort_values('salary_annual', ascending=False)
+    mine = long[long['area'] == focus].groupby('job_id')['skill'].apply(', '.join)
+    st.dataframe(pd.DataFrame({
+        'Title': ex['title'], 'Company': ex['company'], 'Seniority': ex['seniority_label'], 'State': ex['state'],
+        'Posted pay': [('' if u == 'unknown' else f'${v:,.0f} / year' if u == 'annual' else f'${v:,.2f} / hour')
+                       for v, u in zip(ex['minSalary'], ex['salary_unit'])],
+        f'Skills in {focus}': mine.reindex(ex.index).values}), use_container_width=True, hide_index=True, height=320)
+    st.caption(f'{len(jobs):,} postings ask for at least one skill in this area. Follows the global settings in the sidebar.')
 
 
 def skill_tab():
@@ -680,12 +839,15 @@ def ml_tab():
     st.caption(f'All results are based on {len(B):,} postings, so treat them as strong leads to check, not final answers.')
 
 
-t1, t2, t3, t4 = st.tabs(['Course Opportunities', 'Skill Bundles', 'Skill ML Insights', 'Salary Overview'])
+t1, t2, t3, t4, t5 = st.tabs(['Course Opportunities', 'Area Deep Dive', 'Skill Bundles', 'Skill ML Insights',
+                              'Salary Overview'])
 with t1:
     course_tab()
 with t2:
-    skill_tab()
+    area_tab()
 with t3:
-    ml_tab()
+    skill_tab()
 with t4:
+    ml_tab()
+with t5:
     salary_tab()
