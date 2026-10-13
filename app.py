@@ -1,11 +1,13 @@
 """Arusto job market dashboard. Run: streamlit run app.py
 Data is jobs_clean.csv, the cleaned output of jobs_analysis.ipynb."""
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
 import skills_analysis as sa
+import skills_ml as ml
 
 BLUE, GRAY, INK = '#2a78d6', '#c3c2b7', '#52514e'
 # Fixed colour per job board, so a board keeps its colour whatever is filtered
@@ -45,6 +47,22 @@ def load_partners(skill, mode, without_devjobs):
     return sa.partners(d, skill, mode)
 
 
+@st.cache_data
+def load_ml(mode, without_devjobs):
+    """Everything the Skill ML Insights tab needs, computed once per setting."""
+    d = load()
+    if without_devjobs:
+        d = d[d['source'] != DEVJOBS]
+    B = ml.baskets(d, mode)
+    label, modularity, between, strength = ml.communities(B)
+    phi, theta = ml.lda_topics(B)
+    ari, groups = ml.grouping_agreement(B, label, phi, ml.hierarchical_groups(B))
+    hit, hit_pop, n_test = ml.recommender_hit_rate(B, d.loc[B.index, 'company'].values)
+    return dict(B=B, rules=ml.association_rules(B), label=label, modularity=modularity, between=between,
+                strength=strength, phi=phi, theta=theta, ari=ari, groups=groups, hit=hit, hit_pop=hit_pop,
+                n_test=n_test, S=ml.item_similarity(B), salary=d.loc[B.index, 'salary_annual'])
+
+
 def confidence(postings, devjobs_pct):
     """Plain-language reliability of an area's numbers: sample size, then dependence on one job board."""
     level = 2 if postings >= 100 else 1 if postings >= 40 else 0
@@ -71,7 +89,7 @@ MODES = {'Count only when a specific skill confirms them (recommended)': 'corrob
 
 # ---- Global settings (apply to Course Opportunities and Skill Bundles) ----
 st.sidebar.header('Global settings')
-st.sidebar.caption('Apply to Course Opportunities and Skill Bundles. Salary Overview has its own filters on its tab.')
+st.sidebar.caption('Apply to Course Opportunities, Skill Bundles and Skill ML Insights. Salary Overview has its own filters on its tab.')
 without_devjobs = st.sidebar.toggle('Exclude devjobs postings', value=False,
                                     help='devjobs is a tech-only job board that supplies most tech postings in this '
                                          'data. Turn this on to see whether a result depends on that one board.')
@@ -396,10 +414,164 @@ def salary_tab():
         'Job board': show['source'].str.replace('_us', '')}), use_container_width=True, hide_index=True)
 
 
-t1, t2, t3 = st.tabs(['Course Opportunities', 'Skill Bundles', 'Salary Overview'])
+def ml_tab():
+    r = load_ml(mode, without_devjobs)
+    B, rules = r['B'], r['rules']
+    st.markdown('Six machine learning methods applied to the skills in the postings. Each one answers a version of the '
+                'same question: **which skills belong together in one course, and what should a learner pick up next?**')
+    st.caption(f'Based on the {len(B):,} postings that list at least two curated skills ({B.shape[1]} skills). '
+               'Follows the global settings in the sidebar. Full walk-through in skills_ml_experiments.ipynb.')
+
+    # ---- Headline ----
+    st.subheader('What the models found')
+    strong = rules[(rules['size'] == 1) & (rules['confidence'] >= 0.6) & (rules['lift'] > 1.5)]
+    mixed = (r['theta'].max(axis=1) < 0.7).mean()
+    k = st.columns(4)
+    k[0].metric('Strong skill pairings', f'{len(strong)}', help='Rules A → C with confidence of 60% or more and lift above 1.5')
+    k[1].metric('Skill communities', f"{(r['label'].value_counts() >= 2).sum()}",
+                help=f"Found by the Louvain algorithm. Modularity {r['modularity']:.2f}: above 0.3 means clear structure.")
+    k[2].metric('Postings mixing topics', f'{mixed:.0%}', help='Share of postings whose main LDA topic covers less than 70% of their skills')
+    k[3].metric('Recommender hit rate', f"{r['hit']:.0%}", delta=f"{(r['hit'] - r['hit_pop']) * 100:+.0f} pts vs popular skills",
+                help='A hidden skill is found in the top 5 recommendations. Baseline: always recommend the most popular skills.')
+    top = strong.sort_values(['postings', 'confidence'], ascending=False).head(5)
+    if len(top):
+        st.markdown('**Most reliable pairings:** ' + '; '.join(
+            f'{x.confidence:.0%} of {x.antecedent} postings also ask for {x.consequent}' for x in top.itertuples()) + '.')
+
+    # ---- Do the methods agree? ----
+    st.subheader('Do different methods find the same skill groups?')
+    left, right = st.columns([1, 1])
+    with left:
+        a = r['ari'].round(2)
+        short = {'Manual course areas': 'Manual areas', 'Network communities (Louvain)': 'Louvain',
+                 'Topic model (LDA)': 'LDA', 'Hierarchical clustering': 'Hierarchical'}
+        fig = go.Figure(go.Heatmap(z=a.values, x=[short[c] for c in a.columns], y=[short[c] for c in a.index],
+                                   zmin=0, zmax=1, colorscale=[[0, '#cde2fb'], [1, '#184f95']], showscale=False,
+                                   xgap=2, ygap=2, text=a.values, texttemplate='%{text:.2f}',
+                                   hovertemplate='%{y} vs %{x}<br>Agreement %{z:.2f}<extra></extra>'))
+        fig.update_yaxes(autorange='reversed')
+        st.plotly_chart(layout(fig, 'Agreement between four ways of grouping skills',
+                               'Adjusted Rand index: 1 = identical groups, 0 = no better than chance.', height=330),
+                        use_container_width=True)
+    with right:
+        st.markdown('**How to read this.** The manual course areas were defined by hand. The other three groupings '
+                    'come from algorithms that only see which skills are posted together.')
+        off = a.values[~np.eye(len(a), dtype=bool)]
+        st.markdown(f'- Agreement ranges from **{off.min():.2f}** to **{off.max():.2f}**: better than chance, but '
+                    'low to moderate. The methods agree on the **core** of each bundle (cloud, front-end, Office, '
+                    'networking) and disagree on where the boundaries fall.\n'
+                    '- The algorithms merge areas that the manual list keeps apart when employers ask for them '
+                    'together, and split areas whose skills are rarely posted together.\n'
+                    '- Treat a pairing as solid only when it shows up under several methods, and treat the edges of '
+                    'any grouping as a judgement call.')
+
+    # ---- Communities ----
+    st.subheader('Skill communities found by the network model')
+    label, strength = r['label'], r['strength']
+    rows = []
+    for c, members in label.groupby(label):
+        if len(members) < 2:
+            continue
+        names = sorted(members.index, key=lambda s: -strength[s])
+        areas = pd.Series([sa.AREA_OF[s] for s in names]).value_counts()
+        has = B[names].sum(axis=1) >= 2
+        rows.append({'Community': int(c), 'Skills (most connected first)': ', '.join(names),
+                     'Course areas it spans': ', '.join(f'{x} ({n})' for x, n in areas.items()),
+                     'Postings': int(has.sum()), 'Median salary': money(r['salary'][has.values].median())})
+    st.dataframe(pd.DataFrame(rows).set_index('Community'), use_container_width=True)
+    st.caption('Skills are linked when posted together at least 4 times and at least twice as often as chance. '
+               'A community that spans several course areas suggests those areas could be taught as one course.')
+
+    left, right = st.columns(2)
+    with left:
+        g = r['between'].sort_values().tail(10)
+        fig = go.Figure(go.Bar(x=g.values, y=g.index, orientation='h', marker_color=BLUE,
+                               hovertemplate='<b>%{y}</b><br>Betweenness %{x:.3f}<extra></extra>'))
+        fig.update_xaxes(title='Betweenness centrality')
+        st.plotly_chart(layout(fig, 'Bridge skills', 'Skills that connect otherwise separate bundles: candidates for '
+                               'shared foundation content.', height=380), use_container_width=True)
+    with right:
+        phi = r['phi']
+        main = r['theta'].idxmax(axis=1)
+        t = pd.DataFrame({'Top skills': [', '.join(phi.loc[i].sort_values(ascending=False).head(5).index) for i in phi.index],
+                          'Postings': [int((main == i).sum()) for i in phi.index],
+                          'Median salary': [money(r['salary'][(main == i).values].median()) for i in phi.index]},
+                         index=pd.Index(phi.index, name='Topic'))
+        st.markdown('**Topics found by LDA**')
+        st.dataframe(t, use_container_width=True)
+        st.caption(f'{mixed:.0%} of postings mix several topics, so courses that combine two bundles match how '
+                   'employers hire.')
+
+    # ---- Rules ----
+    st.subheader('Association rules: if a posting asks for A, what else does it ask for?')
+    c = st.columns([2, 1, 1])
+    pick = c[0].multiselect('Starting skills (leave empty to see the strongest rules overall)', sorted(B.columns))
+    min_conf = c[1].slider('Minimum confidence', 0.3, 1.0, 0.6, 0.05)
+    min_sup = c[2].slider('Minimum postings', 8, 30, 10)
+    f = rules[(rules['confidence'] >= min_conf) & (rules['postings'] >= min_sup) & (rules['lift'] > 1)]
+    if pick:
+        f = f[f['antecedent'].apply(lambda x: set(x.split(' + ')) <= set(pick))]
+    f = f.sort_values(['confidence', 'postings'], ascending=False).head(40)
+    if f.empty:
+        st.info('No rule meets these thresholds. Lower the minimums or change the starting skills.')
+    else:
+        st.dataframe(pd.DataFrame({'If a posting asks for': f['antecedent'], 'it also asks for': f['consequent'],
+                                   'Postings': f['postings'], 'Confidence': f['confidence'].map('{:.0%}'.format),
+                                   'Lift': f['lift'].round(1)}), use_container_width=True, hide_index=True)
+        st.caption('Confidence: of the postings with the starting skills, the share that also list the other skill. '
+                   'Lift above 1 means more often than chance. Rules with two starting skills capture three-way '
+                   'patterns that pairwise comparison misses.')
+
+    # ---- Recommender ----
+    st.subheader('What to learn next')
+    have = st.multiselect('Skills a learner already has', sorted(B.columns),
+                          default=[s for s in ['Python', 'SQL'] if s in B.columns])
+    rec = ml.recommend(have, r['S'], B.columns, 8)
+    if rec.empty:
+        st.info('Pick at least one skill.')
+    else:
+        g = rec.sort_values()
+        fig = go.Figure(go.Bar(x=g.values, y=g.index, orientation='h', marker_color=BLUE,
+                               customdata=[sa.AREA_OF[s] for s in g.index],
+                               hovertemplate='<b>%{y}</b> (%{customdata})<br>Score %{x:.2f}<extra></extra>'))
+        fig.update_xaxes(title='Similarity to the skills already held')
+        st.plotly_chart(layout(fig, 'Recommended next skills', height=330), use_container_width=True)
+    st.caption(f"Tested by hiding one skill from each of {r['n_test']} postings: the recommender finds it in its top 5 "
+               f"{r['hit']:.0%} of the time, against {r['hit_pop']:.0%} for always recommending the most popular skills.")
+
+    # ---- Method comparison ----
+    st.subheader('How the methods compare')
+    best = r['ari'].drop(index='Manual course areas')['Manual course areas']
+    st.dataframe(pd.DataFrame([
+        {'Method': 'Association rules', 'Type': 'Pattern mining', 'Question it answers': 'If A, then what else?',
+         'Result on this data': f'{len(strong)} strong pairings', 'Verdict': 'Most directly usable'},
+        {'Method': 'Network communities (Louvain)', 'Type': 'Unsupervised',
+         'Question it answers': 'Which skills form a group?',
+         'Result on this data': f"Modularity {r['modularity']:.2f}; agreement with manual areas {best['Network communities (Louvain)']:.2f}",
+         'Verdict': 'Useful, groups overlap'},
+        {'Method': 'Hierarchical clustering', 'Type': 'Unsupervised', 'Question it answers': 'Which skills form a group?',
+         'Result on this data': f"Agreement with manual areas {best['Hierarchical clustering']:.2f}",
+         'Verdict': 'Useful for small, tight bundles'},
+        {'Method': 'Topic model (LDA)', 'Type': 'Unsupervised', 'Question it answers': 'Which job types exist?',
+         'Result on this data': f'{mixed:.0%} of postings mix topics', 'Verdict': 'Useful, shows postings are mixed'},
+        {'Method': 'Skill recommender', 'Type': 'Collaborative filtering', 'Question it answers': 'What to learn next?',
+         'Result on this data': f"Top-5 hit rate {r['hit']:.0%} vs {r['hit_pop']:.0%} baseline", 'Verdict': 'Works'},
+        {'Method': 'Skill embeddings', 'Type': 'Unsupervised', 'Question it answers': 'Which skills are similar?',
+         'Result on this data': 'Clear only for dense bundles', 'Verdict': 'Needs more data (notebook only)'},
+        {'Method': 'Skills from job title', 'Type': 'Supervised classification', 'Question it answers': 'Can missing tags be filled in?',
+         'Result on this data': 'Good for Java, Networking, Cloud; weak for Office skills', 'Verdict': 'Not reliable enough (notebook only)'},
+    ]), use_container_width=True, hide_index=True)
+    st.caption('The last two methods are documented in skills_ml_experiments.ipynb and not shown here because their '
+               'results were weak. Salary models (decision tree, random forest, XGBoost with SHAP) are in '
+               'ml_experiments.ipynb. All results here rest on a few hundred postings and should be read as leads.')
+
+
+t1, t2, t3, t4 = st.tabs(['Course Opportunities', 'Skill Bundles', 'Skill ML Insights', 'Salary Overview'])
 with t1:
     course_tab()
 with t2:
     skill_tab()
 with t3:
+    ml_tab()
+with t4:
     salary_tab()
