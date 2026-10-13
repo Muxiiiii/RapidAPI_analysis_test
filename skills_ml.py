@@ -136,3 +136,50 @@ def recommender_hit_rate(B, companies, k=5):
             hit_pop += hidden in [s for s in popular if s not in have][:k]
             total += 1
     return hit / total, hit_pop / total, total
+
+
+def embedding_similarity(B, dims=12):
+    """Skill vectors from the PPMI co-occurrence matrix factorized with SVD (the matrix form of Word2Vec).
+    Returns the cosine similarity between every pair of skills."""
+    from sklearn.decomposition import TruncatedSVD
+    from sklearn.preprocessing import normalize
+    cooc = (B.T @ B).values.astype(float)
+    np.fill_diagonal(cooc, 0)
+    row = cooc.sum(axis=1)
+    row[row == 0] = 1
+    pmi = np.log(np.maximum(cooc * cooc.sum(), 1e-12) / np.outer(row, row))
+    ppmi = np.where(cooc > 0, np.maximum(pmi, 0), 0)
+    E = normalize(TruncatedSVD(n_components=min(dims, B.shape[1] - 1), random_state=0).fit_transform(ppmi))
+    return pd.DataFrame(E @ E.T, index=B.columns, columns=B.columns)
+
+
+def title_classifier(df, ambiguous='corroborated', n_skills=20):
+    """One logistic regression per skill on TF-IDF of the job title, scored with company-grouped cross-validation.
+    Returns (score table, out-of-fold suggestions for postings that have no curated skill)."""
+    from sklearn.feature_extraction.text import TfidfVectorizer
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import average_precision_score
+    from sklearn.model_selection import cross_val_predict
+    from sklearn.pipeline import make_pipeline
+    long = sa.long_skills(df, ambiguous)
+    Y = (long.assign(v=1).pivot_table(index='job_id', columns='skill', values='v', aggfunc='max', fill_value=0)
+         .reindex(range(len(df)), fill_value=0))
+    Y.index = df.index
+    targets = Y.sum().sort_values(ascending=False).head(n_skills).index
+    cv = GroupKFold(n_splits=5)
+    proba, rows = {}, []
+    for s in targets:
+        model = make_pipeline(TfidfVectorizer(ngram_range=(1, 2), min_df=2, sublinear_tf=True),
+                              LogisticRegression(C=4.0, class_weight='balanced', max_iter=2000))
+        p = cross_val_predict(model, df['title'], Y[s], cv=cv, groups=df['company'], method='predict_proba')[:, 1]
+        proba[s] = p
+        rows.append({'skill': s, 'postings': int(Y[s].sum()), 'base_rate': Y[s].mean(),
+                     'average_precision': average_precision_score(Y[s], p)})
+    scores = pd.DataFrame(rows).set_index('skill').sort_values('average_precision', ascending=False)
+    P = pd.DataFrame(proba, index=df.index)
+    empty = Y.sum(axis=1) == 0
+    best = P[empty].max(axis=1)
+    sugg = pd.DataFrame({'title': df.loc[best.index, 'title'], 'suggested_skill': P[empty].idxmax(axis=1),
+                         'probability': best})
+    sugg = sugg[sugg['probability'] >= 0.7].drop_duplicates('title').sort_values('probability', ascending=False)
+    return scores, sugg
