@@ -186,7 +186,7 @@ def course_tab():
                                        colorscale=[[0, '#cde2fb'], [1, '#184f95']], showscale=False,
                                        text=h.values.astype(int), texttemplate='%{text}',
                                        hovertemplate='<b>%{y}</b><br>%{x}: %{z:.0f} / 100<extra></extra>'))
-            fig.update_xaxes(side='top', tickangle=0)
+            fig.update_xaxes(side='bottom', tickangle=0)
             st.plotly_chart(layout(fig, 'What drives each score',
                                    'Rank on each signal: 0 = weakest area, 100 = strongest.',
                                    height=30 * len(h) + 110), use_container_width=True)
