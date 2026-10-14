@@ -13,6 +13,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
+import scoring_v2
 from pipeline import clean, config, outputs, validate
 
 log = logging.getLogger('pipeline')
@@ -49,6 +50,9 @@ def main(argv=None):
 
     log.info('4/4 Scoring course areas and running skill models')
     files, summary = outputs.write(df, config.OUTPUT_DIR)
+    v2 = scoring_v2.write(df, config.OUTPUT_DIR / 'scoring_v2')
+    files += [f'scoring_v2/{f}' for f in sorted(p.name for p in (config.OUTPUT_DIR / 'scoring_v2').glob('*.csv')) + ['report_v2.json']]
+    summary['robustness'] = {'stable_top10_skills': v2.get('stable_top10_skills'), 'onet_check': v2.get('onet_check')}
     report = {'run_at': datetime.now(timezone.utc).isoformat(timespec='seconds'),
               'inputs': [p.name for p in args.input], 'row_counts': counts,
               'salary_units': df['salary_unit'].value_counts().to_dict(),

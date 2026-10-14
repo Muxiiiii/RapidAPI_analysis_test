@@ -1,0 +1,153 @@
+{
+  "area": {
+    "items": 13,
+    "top_k": 3,
+    "weights": {
+      "expert": {
+        "demand": 0.45,
+        "salary": 0.3,
+        "trend": 0.1,
+        "breadth": 0.15
+      },
+      "equal": {
+        "demand": 0.25,
+        "salary": 0.25,
+        "trend": 0.25,
+        "breadth": 0.25
+      },
+      "entropy": {
+        "demand": 0.334,
+        "salary": 0.23,
+        "trend": 0.14,
+        "breadth": 0.296
+      },
+      "critic": {
+        "demand": 0.222,
+        "salary": 0.334,
+        "trend": 0.227,
+        "breadth": 0.217
+      },
+      "pca": {
+        "demand": 0.298,
+        "salary": 0.216,
+        "trend": 0.192,
+        "breadth": 0.294
+      }
+    },
+    "pca_first_component_share": 0.52,
+    "indicator_correlation": {
+      "demand": {
+        "demand": 1.0,
+        "salary": 0.02,
+        "trend": 0.27,
+        "breadth": 0.99
+      },
+      "salary": {
+        "demand": 0.02,
+        "salary": 1.0,
+        "trend": -0.27,
+        "breadth": 0.06
+      },
+      "trend": {
+        "demand": 0.27,
+        "salary": -0.27,
+        "trend": 1.0,
+        "breadth": 0.17
+      },
+      "breadth": {
+        "demand": 0.99,
+        "salary": 0.06,
+        "trend": 0.17,
+        "breadth": 1.0
+      }
+    }
+  },
+  "stable_top3_areas": [
+    "Programming & Software Engineering"
+  ],
+  "skill": {
+    "items": 109,
+    "top_k": 10,
+    "weights": {
+      "expert": {
+        "demand": 0.45,
+        "salary": 0.3,
+        "trend": 0.1,
+        "breadth": 0.15
+      },
+      "equal": {
+        "demand": 0.25,
+        "salary": 0.25,
+        "trend": 0.25,
+        "breadth": 0.25
+      },
+      "entropy": {
+        "demand": 0.569,
+        "salary": 0.101,
+        "trend": 0.013,
+        "breadth": 0.317
+      },
+      "critic": {
+        "demand": 0.232,
+        "salary": 0.376,
+        "trend": 0.153,
+        "breadth": 0.239
+      },
+      "pca": {
+        "demand": 0.317,
+        "salary": 0.218,
+        "trend": 0.152,
+        "breadth": 0.312
+      }
+    },
+    "pca_first_component_share": 0.511,
+    "indicator_correlation": {
+      "demand": {
+        "demand": 1.0,
+        "salary": 0.07,
+        "trend": 0.2,
+        "breadth": 0.99
+      },
+      "salary": {
+        "demand": 0.07,
+        "salary": 1.0,
+        "trend": -0.06,
+        "breadth": 0.06
+      },
+      "trend": {
+        "demand": 0.2,
+        "salary": -0.06,
+        "trend": 1.0,
+        "breadth": 0.13
+      },
+      "breadth": {
+        "demand": 0.99,
+        "salary": 0.06,
+        "trend": 0.13,
+        "breadth": 1.0
+      }
+    }
+  },
+  "onet_check": {
+    "labelled_skills": 67,
+    "hot": 57,
+    "not_hot": 10,
+    "auc": {
+      "score_expert": 0.833,
+      "score_equal": 0.833,
+      "score_entropy": 0.875,
+      "score_critic": 0.798,
+      "score_pca": 0.872,
+      "jobs": 0.868,
+      "salary_premium_pct": 0.556,
+      "companies": 0.859
+    }
+  },
+  "stable_top10_skills": [
+    "Python",
+    "Microsoft Excel",
+    "DevOps",
+    "Cloud Computing",
+    "Microsoft PowerPoint"
+  ]
+}

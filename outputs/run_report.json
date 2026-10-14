@@ -1,5 +1,5 @@
 {
-  "run_at": "2026-10-13T12:44:57+00:00",
+  "run_at": "2026-10-14T12:21:47+00:00",
   "inputs": [
     "combined_jobs_data.csv"
   ],
@@ -116,12 +116,41 @@
     "popularity_baseline_hit_rate": 0.354,
     "recommender_test_postings": 305
   },
+  "robustness": {
+    "stable_top10_skills": [
+      "Python",
+      "Microsoft Excel",
+      "DevOps",
+      "Cloud Computing",
+      "Microsoft PowerPoint"
+    ],
+    "onet_check": {
+      "labelled_skills": 67,
+      "hot": 57,
+      "not_hot": 10,
+      "auc": {
+        "score_expert": 0.833,
+        "score_equal": 0.833,
+        "score_entropy": 0.875,
+        "score_critic": 0.798,
+        "score_pca": 0.872,
+        "jobs": 0.868,
+        "salary_premium_pct": 0.556,
+        "companies": 0.859
+      }
+    }
+  },
   "outputs": [
     "jobs_clean.csv",
     "outputs/course_area_scores.csv",
     "outputs/skill_scores.csv",
     "outputs/association_rules.csv",
-    "outputs/skill_communities.csv"
+    "outputs/skill_communities.csv",
+    "outputs/scoring_v2/area_rca_by_industry.csv",
+    "outputs/scoring_v2/area_scores_v2.csv",
+    "outputs/scoring_v2/skill_rca_by_industry.csv",
+    "outputs/scoring_v2/skill_scores_v2.csv",
+    "outputs/scoring_v2/report_v2.json"
   ],
-  "seconds": 0.4
+  "seconds": 1.0
 }

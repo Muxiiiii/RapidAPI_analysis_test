@@ -6,6 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
+import scoring_v2 as rb
 import skills_analysis as sa
 import skills_ml as ml
 
@@ -63,6 +64,15 @@ def load_ml(mode, without_devjobs):
                 strength=strength, phi=phi, theta=theta, ari=ari, groups=groups, hit=hit, hit_pop=hit_pop,
                 n_test=n_test, S=ml.item_similarity(B), salary=d.loc[B.index, 'salary_annual'],
                 sim=ml.embedding_similarity(B), title_scores=title_scores, title_sugg=title_sugg)
+
+
+@st.cache_data
+def load_robustness(mode, without_devjobs):
+    """Weight-sampling, objective-weight, Pareto, RCA and O*NET checks for the opportunity score."""
+    d = load()
+    if without_devjobs:
+        d = d[d['source'] != DEVJOBS]
+    return rb.robustness(d, mode, rb.ONET_FILE)
 
 
 def confidence(postings, devjobs_pct):
@@ -838,16 +848,111 @@ def ml_tab():
         'full job description, before their results can be trusted.')
     st.caption(f'All results are based on {len(B):,} postings, so treat them as strong leads to check, not final answers.')
 
+SCHEMES = {'expert': 'Original weights', 'equal': 'Equal', 'entropy': 'Entropy', 'critic': 'CRITIC', 'pca': 'PCA'}
+DIM_NAMES = {'demand': 'Demand', 'salary': 'Salary premium', 'trend': 'Trend', 'breadth': 'Breadth'}
 
-t1, t2, t3, t4, t5 = st.tabs(['Course Opportunities', 'Area Deep Dive', 'Skill Bundles', 'Skill ML Insights',
-                              'Salary Overview'])
+
+def robustness_tab():
+    tables, report = load_robustness(mode, without_devjobs)
+    st.markdown('The opportunity score on the first tab uses weights we set ourselves (demand 45%, salary 30%, '
+                'trend 10%, breadth 15%). They are a judgement call with no published source, so this page checks '
+                'whether the ranking holds up when the weights change, following the OECD & JRC (2008) '
+                '*Handbook on Constructing Composite Indicators* and Saisana, Saltelli & Tarantola (2005).')
+    level = st.radio('Rank', ['Skills', 'Course areas'], horizontal=True)
+    key = 'skill' if level == 'Skills' else 'area'
+    t, R = tables[key]
+    k = report[key]['top_k']
+    p_col = f'dir_flat_p_top{k}'
+    stable = t.index[t[p_col] >= 0.8].tolist()
+    unit = 'skills' if key == 'skill' else 'course areas'
+
+    st.subheader(f'Stable top {k}')
+    st.markdown(f'Ranked again with 10,000 random weight sets. **{len(stable)} of the {len(t)} {unit} stay in the top {k} in at '
+                f'least 80% of them:** ' + (', '.join(stable) if stable else 'none') + '.')
+
+    show = t.sort_values('dir_flat_median_rank').head(20 if key == 'skill' else len(t)).iloc[::-1]
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=show['dir_flat_rank_p95'], y=show.index, mode='markers', marker=dict(size=1, color=GRAY),
+                             error_x=dict(type='data', symmetric=False, array=[0] * len(show),
+                                          arrayminus=show['dir_flat_rank_p95'] - show['dir_flat_rank_p05'],
+                                          color=GRAY, thickness=6, width=0),
+                             hoverinfo='skip', showlegend=False))
+    fig.add_trace(go.Scatter(x=show['dir_flat_median_rank'], y=show.index, mode='markers',
+                             marker=dict(size=11, color=BLUE, line=dict(color='white', width=1.5)),
+                             customdata=show[[p_col, 'rank_expert']].values, showlegend=False,
+                             hovertemplate='<b>%{y}</b><br>Median rank %{x:.0f}<br>'
+                                           f'In the top {k} in %{{customdata[0]:.0%}} of weight sets<br>'
+                                           'Rank with the original weights %{customdata[1]}<extra></extra>'))
+    fig.update_xaxes(title='Rank (1 = best)', autorange='reversed')
+    layout(fig, 'How much the rank moves when the weights change',
+           'Dot = median rank over 10,000 random weight sets. Bar = the middle 90% of ranks.',
+           height=max(320, 26 * len(show) + 120))
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.subheader('Rank under different weighting methods')
+    st.markdown('Besides random weights, the weights can be set from the data. **Entropy** gives more weight to the '
+                'signal that varies most. **CRITIC** (Diakoulaki, Mavrotas & Papayannakis 1995) also discounts '
+                'signals that repeat each other. **PCA** weights follow the main pattern in the data. Where all of '
+                'them agree, the result is the most credible.')
+    w = pd.DataFrame(report[key]['weights']).T.rename(index=SCHEMES, columns=DIM_NAMES)
+    st.dataframe(w.style.format('{:.0%}'), use_container_width=True)
+    corr = report[key]['indicator_correlation']['demand']['breadth']
+    st.caption(f'Postings (demand) and companies (breadth) correlate at {corr:.2f}, so they measure nearly the same '
+               'thing. With the original weights demand effectively counts twice; CRITIC corrects for that.')
+    cols = {f'rank_{s}': n for s, n in SCHEMES.items()}
+    tab = t[list(cols)].rename(columns=cols)
+    tab[f'Top {k} share'] = t[p_col].map('{:.0%}'.format)
+    tab['Pareto front'] = np.where(t['pareto_layer'] == 1, 'Yes', '')
+    tab['Industries with RCA ≥ 1'] = t['industries_rca_ge1']
+    if key == 'skill':
+        tab.insert(0, 'Course area', t['area'])
+    st.dataframe(tab.sort_values('Original weights').rename_axis(level[:-1]), use_container_width=True, height=420)
+    st.caption('Industries with RCA ≥ 1: in how many industries (with at least 20 postings) the item appears more '
+               'often than in the data as a whole, after Alabdulkareem et al. (2018). Unlike the company count, it '
+               'does not simply grow with the number of postings.')
+
+    st.subheader('Pareto front: no weights at all')
+    X = t.assign(lbl=np.where((t['pareto_layer'] == 1) | t.index.isin(stable), t.index, ''))
+    front = X['pareto_layer'] == 1
+    fig = go.Figure()
+    for mask, name, color, size in [(~front, 'Other', GRAY, 8), (front, 'On the Pareto front', BLUE, 13)]:
+        g = X[mask]
+        fig.add_trace(go.Scatter(x=g['jobs'], y=g['salary_premium_pct'], mode='markers+text', name=name,
+                                 text=g['lbl'], textposition='top center',
+                                 marker=dict(size=size, color=color, line=dict(color='white', width=1)),
+                                 customdata=np.column_stack([g['companies'], g['pareto_layer'], g.index]),
+                                 hovertemplate='<b>%{customdata[2]}</b><br>%{x} postings, %{customdata[0]} companies<br>'
+                                               'Salary difference %{y:.0f}%<br>Layer %{customdata[1]}<extra></extra>'))
+    fig.update_xaxes(title='Postings', type='log')
+    layout(fig, f'{level} that no other item beats on demand, salary and breadth at once',
+           'Up = higher pay after controlling for seniority and job board. Right = more postings.', height=480)
+    fig.update_layout(yaxis_title='Salary difference (%)', legend=dict(orientation='h', y=-0.15))
+    st.plotly_chart(fig, use_container_width=True)
+    st.caption('Trend is left out here because most items have too few postings at both time points to measure it.')
+
+    if key == 'skill' and 'onet_check' in report:
+        o = report['onet_check']
+        st.subheader('Check against an outside source')
+        st.markdown(f'{o["labelled_skills"]} skills match an entry in the O*NET 29.3 technology list, which flags '
+                    f'{o["hot"]} of them as Hot Technologies. The score ranks a hot skill above a non-hot one '
+                    f'{o["auc"]["score_expert"]:.0%} of the time with the original weights '
+                    f'(CRITIC {o["auc"]["score_critic"]:.0%}, entropy {o["auc"]["score_entropy"]:.0%}).')
+        st.caption('O*NET flags hot technologies by how often they appear in job ads, so this confirms the demand '
+                   f'signal rather than proving the score can spot emerging skills. Only {o["not_hot"]} skills are '
+                   'not hot, so the figure is rough. Arusto enrollment data would make a stronger check.')
+
+
+t1, t2, t3, t4, t5, t6 = st.tabs(['Course Opportunities', 'Score Robustness', 'Area Deep Dive', 'Skill Bundles',
+                                  'Skill ML Insights', 'Salary Overview'])
 with t1:
     course_tab()
 with t2:
-    area_tab()
+    robustness_tab()
 with t3:
-    skill_tab()
+    area_tab()
 with t4:
-    ml_tab()
+    skill_tab()
 with t5:
+    ml_tab()
+with t6:
     salary_tab()

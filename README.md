@@ -4,8 +4,6 @@ Job market analytics for the question **"what courses should we build next?"**, 
 Daily International Job Postings API (RapidAPI). The repository holds a reproducible data pipeline, a Streamlit
 dashboard, and the analysis notebooks behind them.
 
-Link to Streamlit Dashboard: https://rapid-api-job-data-analysis.streamlit.app/
-
 ## What is here
 
 | Path | What it is |
@@ -13,6 +11,8 @@ Link to Streamlit Dashboard: https://rapid-api-job-data-analysis.streamlit.app/
 | `run_pipeline.py` | One command that runs the whole pipeline |
 | `pipeline/` | The pipeline steps: `fetch.py` (optional API download), `clean.py`, `validate.py`, `outputs.py`, and settings in `config.py` |
 | `skills_analysis.py` | Skill taxonomy (13 course areas), market signals and the opportunity score |
+| `scoring_v2.py` | Robustness checks for the opportunity score: random weights (Dirichlet), entropy / CRITIC / PCA weights, Pareto front, RCA by industry, O*NET Hot Technology check. Shown on the dashboard's Score Robustness tab |
+| `external/` | O*NET 29.3 Technology Skills file (public data) used for the outside check |
 | `skills_ml.py` | Skill models: association rules, communities, topics, recommender and others |
 | `app.py` | The Streamlit dashboard |
 | `combined_jobs_data.csv` | Raw API export (pipeline input) |
@@ -37,7 +37,8 @@ The pipeline runs four steps and stops at the first problem:
    valid states and dates. If a check fails, nothing is written.
 3. **Write** `jobs_clean.csv`.
 4. **Score and model**: opportunity scores for course areas and skills, association rules, skill communities and the
-   recommender's tested hit rate, plus a `run_report.json` that records what was run and what came out.
+   recommender's tested hit rate, robustness checks in `outputs/scoring_v2/`, plus a `run_report.json` that records
+   what was run and what came out.
 
 ## Download new postings from the API (optional)
 
@@ -84,6 +85,9 @@ Thresholds live in `pipeline/config.py`: the salary cut-offs used to tell hourly
 dropped, and the data quality limits. The skill taxonomy lives in `skills_analysis.py`.
 
 ## Known limits
+
+- The opportunity score weights (45/30/10/15) are a judgement call with no published source. `scoring_v2.py` checks
+  that the top of the ranking holds under random and data-driven weights.
 
 - The API gives no salary unit, so hourly and annual pay are inferred from the size of the number.
 - Postings come from several job boards in different proportions per batch. Most tech postings come from one board
