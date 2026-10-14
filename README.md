@@ -4,6 +4,8 @@ Job market analytics for the question **"what courses should we build next?"**, 
 Daily International Job Postings API (RapidAPI). The repository holds a reproducible data pipeline, a Streamlit
 dashboard, and the analysis notebooks behind them.
 
+Link to Streamlit Dashboard: https://rapid-api-job-data-analysis.streamlit.app/
+
 ## What is here
 
 | Path | What it is |
