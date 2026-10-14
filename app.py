@@ -138,16 +138,33 @@ def course_tab():
     sig_wo, skill_wo = load_signals(mode, True)
     mix = load_mix(mode)
 
-    top = st.container()   # filled after the weights are read, but shown first
-    with st.expander('Adjust scoring weights'):
-        st.caption('The opportunity score ranks each area on four signals and averages the ranks with these weights.')
+    presets = {'Original': dict(zip(rb.DIMS, rb.EXPERT)), 'Equal': dict.fromkeys(rb.DIMS, 0.25)}
+    presets.update({n.upper() if n == 'critic' else n.title(): w
+                    for n, w in load_robustness(mode, without_devjobs)[1]['area']['weights'].items()
+                    if n in ('critic', 'entropy')})
+    keys = {'demand': 'w_demand', 'salary': 'w_salary', 'breadth': 'w_breadth', 'trend': 'w_trend'}
+
+    def apply_preset():
+        for dim, k in keys.items():   # sliders move in steps of 0.05
+            st.session_state[k] = round(float(presets[st.session_state['w_preset']][dim]) * 20) / 20
+
+    for dim, k in keys.items():
+        st.session_state.setdefault(k, round(float(presets['Original'][dim]) * 20) / 20)
+    with st.expander('Adjust scoring weights', expanded=True):
+        st.caption('The opportunity score ranks each area on four signals and averages the ranks with these weights. '
+                   'Pick a preset or move the sliders; the Score Robustness tab explains the presets.')
+        st.radio('Preset', list(presets), key='w_preset', horizontal=True, on_change=apply_preset,
+                 help='Original: weights we set ourselves. Equal: 25% each. CRITIC and Entropy: weights set from '
+                      'the data (CRITIC discounts signals that repeat each other).')
         w = st.columns(4)
-        wd = w[0].slider('Hiring demand', 0.0, 1.0, 0.45, 0.05, help='Number of postings asking for skills in the area')
-        ws = w[1].slider('Salary difference', 0.0, 1.0, 0.30, 0.05,
+        wd = w[0].slider('Hiring demand', 0.0, 1.0, step=0.05, key='w_demand',
+                         help='Number of postings asking for skills in the area')
+        ws = w[1].slider('Salary difference', 0.0, 1.0, step=0.05, key='w_salary',
                          help='Pay of postings in the area compared with other postings of the same seniority and job board')
-        wb = w[2].slider('Employer coverage', 0.0, 1.0, 0.15, 0.05, help='Number of distinct companies hiring')
-        wt = w[3].slider('Two-period change', 0.0, 1.0, 0.10, 0.05,
+        wb = w[2].slider('Employer coverage', 0.0, 1.0, step=0.05, key='w_breadth', help='Number of distinct companies hiring')
+        wt = w[3].slider('Two-period change', 0.0, 1.0, step=0.05, key='w_trend',
                          help='Change in share of postings between Sep 2025 and Mar 2026. Neutral where the sample is too small.')
+    top = st.container()
     weights = (wd, ws, wt, wb)
     full = area_table(sig_all, sig_wo, mix, weights)
     # the view follows the global devjobs switch; `full` always keeps both rankings for comparison
